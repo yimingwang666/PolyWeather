@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aether-Q Quant Terminal</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background-color: #f4f4f9; color: #111; padding: 20px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+        h1 { font-size: 20px; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 5px; }
+        .time { font-size: 13px; color: #666; margin-bottom: 25px; }
+        h2 { font-size: 16px; margin-top: 30px; margin-bottom: 10px; background-color: #ddd; padding: 4px 8px; border-left: 4px solid #111;}
+        table { width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; font-size: 14px; }
+        th { background-color: #eaeaea; width: 45%; }
+        .highlight { font-weight: bold; background-color: #e6f7e6; }
+        .alert { color: #d9534f; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Aether-Q Quant Terminal</h1>
+    <div class="time" id="update-time">Connecting to engine...</div>
+
+    <h2>1. 实时数据探针 (RKSI)</h2>
+    <table>
+        <tr><th>数据切片时刻</th><td id="current-hour">--</td></tr>
+        <tr><th>今日截至目前最高温</th><td id="max-temp" class="alert">--</td></tr>
+        <tr><th>此时刻绝对温度</th><td id="cur-temp">--</td></tr>
+        <tr><th>七大超算预报均值</th><td id="for-mean">--</td></tr>
+    </table>
+
+    <h2>2. Aether-Q 原生概率推演</h2>
+    <table>
+        <tr><th>预测中位数 (50%)</th><td id="mod-median" class="highlight">--</td></tr>
+        <tr><th>90% 置信区间 (5% - 95%)</th><td id="mod-range">--</td></tr>
+    </table>
+    
+    <table style="margin-top: 15px;">
+        <thead>
+            <tr>
+                <th style="background-color: #111; color: #fff;">结算温度 (°C)</th>
+                <th style="background-color: #111; color: #fff;">纯净推演胜率 (Yes)</th>
+            </tr>
+        </thead>
+        <tbody id="prob-tbody">
+            <tr><td colspan="2">Awaiting data...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        fetch('data.json?t=' + new Date().getTime())
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('update-time').innerText = "Last Update: " + data.update_time;
+                
+                document.getElementById('current-hour').innerText = data.hour + ":00 KST";
+                document.getElementById('max-temp').innerText = data.realtime.max_temp + " °C";
+                document.getElementById('cur-temp').innerText = data.realtime.current_temp + " °C";
+                document.getElementById('for-mean').innerText = data.realtime.forecast_mean + " °C";
+                
+                if(data.model.error) {
+                    document.getElementById('mod-median').innerText = "Model error";
+                    return;
+                }
+                
+                document.getElementById('mod-median').innerText = data.model.median + " °C";
+                document.getElementById('mod-range').innerText = `[ ${data.model.quantiles.p05}°C  ~  ${data.model.quantiles.p95}°C ]`;
+
+                let tbodyHtml = "";
+                data.model.probabilities.forEach((item, index) => {
+                    let rowClass = index === 0 ? "highlight" : "";
+                    tbodyHtml += `<tr class="${rowClass}">
+                        <td><strong>${item.temp} °C</strong></td>
+                        <td>${item.prob} %</td>
+                    </tr>`;
+                });
+                document.getElementById('prob-tbody').innerHTML = tbodyHtml;
+            })
+            .catch(err => {
+                document.getElementById('update-time').innerText = "Error: Cannot fetch data.json.";
+            });
+    </script>
+</body>
+</html>
