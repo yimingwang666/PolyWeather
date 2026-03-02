@@ -1,0 +1,38 @@
+{
+  "update_time": "2026-03-02 15:37:18 KST",
+  "hour": 15,
+  "realtime": {
+    "current_temp": 5.0,
+    "max_temp": 6.0,
+    "forecast_mean": 4.01
+  },
+  "model": {
+    "median": 6.47,
+    "quantiles": {
+      "p05": 6.26,
+      "p95": 6.67
+    },
+    "probabilities": [
+      {
+        "temp": 6,
+        "prob": 54.7
+      },
+      {
+        "temp": 7,
+        "prob": 45.3
+      },
+      {
+        "temp": 4,
+        "prob": 0.0
+      },
+      {
+        "temp": 5,
+        "prob": 0.0
+      },
+      {
+        "temp": 8,
+        "prob": 0.0
+      }
+    ]
+  }
+}
