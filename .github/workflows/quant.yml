@@ -1,0 +1,37 @@
+name: Quant Bot (10 Min)
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库代码
+        uses: actions/checkout@v3
+
+      - name: 设置 Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 安装量化依赖
+        run: |
+          pip install requests pandas numpy scipy catboost pytz
+
+      - name: 运行主脑模型
+        run: |
+          python run_bot.py
+
+      - name: 提交并推送最新盘口数据
+        run: |
+          git config --global user.name "Aether-Bot"
+          git config --global user.email "bot@quant.com"
+          git add data.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto: Update probabilities"
+          git push
