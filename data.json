@@ -1,35 +1,35 @@
 {
-  "update_time": "2026-03-02 18:54:51 KST",
-  "hour": 18,
+  "update_time": "2026-03-02 19:37:49 KST",
+  "hour": 19,
   "realtime": {
     "current_temp": 5.0,
     "max_temp": 6.0,
-    "forecast_mean": 3.64
+    "forecast_mean": 3.11
   },
   "institutions": [
     {
       "name": "ECMWF (欧洲)",
-      "temp": 3.4
+      "temp": 2.8
     },
     {
       "name": "GFS (美国)",
-      "temp": 4.6
+      "temp": 3.5
     },
     {
       "name": "ICON (德国)",
-      "temp": 3.8
+      "temp": 3.2
     },
     {
       "name": "JMA (日本)",
-      "temp": 2.6
+      "temp": 2.2
     },
     {
       "name": "UKMO (英国)",
-      "temp": 3.6
+      "temp": 3.4
     },
     {
       "name": "CMA (中国)",
-      "temp": 4.9
+      "temp": 4.5
     },
     {
       "name": "Best Match (综合)",
@@ -249,22 +249,18 @@
     }
   },
   "model": {
-    "median": 6.47,
+    "median": 6.28,
     "quantiles": {
-      "p05": 6.38,
-      "p25": 6.41,
-      "p50": 6.47,
-      "p75": 6.49,
-      "p95": 6.51
+      "p05": 5.98,
+      "p25": 6.25,
+      "p50": 6.28,
+      "p75": 6.28,
+      "p95": 6.44
     },
     "probabilities": [
       {
         "temp": 6,
-        "prob": 87.06
-      },
-      {
-        "temp": 7,
-        "prob": 12.94
+        "prob": 100.0
       },
       {
         "temp": 4,
@@ -272,6 +268,10 @@
       },
       {
         "temp": 5,
+        "prob": 0.0
+      },
+      {
+        "temp": 7,
         "prob": 0.0
       },
       {
