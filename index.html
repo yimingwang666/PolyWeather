@@ -16,9 +16,25 @@
         .highlight { font-weight: bold; background-color: #e6f7e6; color: #006600;}
         .alert { color: #d9534f; font-weight: bold; }
         .text-left { text-align: left; }
-        .chart-container { background: #fff; border: 1px solid #ccc; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px;}
+        
+        /* 图表容器响应式高度 */
+        .chart-container { 
+            position: relative; 
+            background: #fff; 
+            border: 1px solid #ccc; 
+            padding: 15px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            margin-bottom: 15px;
+            height: 350px;
+            width: auto;
+        }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+        
+        /* 手机端适配 */
+        @media (max-width: 600px) { 
+            .grid-2 { grid-template-columns: 1fr; } 
+            .chart-container { height: 280px; } 
+        }
     </style>
 </head>
 <body>
@@ -54,11 +70,11 @@
     <h2>模型预测分位点</h2>
     <table>
         <tr>
-            <th>5% (极低)</th>
-            <th>25% (偏低)</th>
-            <th class="highlight">50% (中位数)</th>
-            <th>75% (偏高)</th>
-            <th>95% (极高)</th>
+            <th>5%</th>
+            <th>25%</th>
+            <th class="highlight">50%</th>
+            <th>75%</th>
+            <th>95%</th>
         </tr>
         <tr id="quantile-row">
             <td>--</td><td>--</td><td>--</td><td>--</td><td>--</td>
@@ -67,7 +83,7 @@
 
     <h2>概率分布图</h2>
     <div class="chart-container">
-        <canvas id="probChart" height="100"></canvas>
+        <canvas id="probChart"></canvas>
     </div>
     
     <div class="grid-2">
@@ -86,7 +102,7 @@
 
     <h2>实况与预测 24H 趋势图</h2>
     <div class="chart-container">
-        <canvas id="tempChart" height="150"></canvas>
+        <canvas id="tempChart"></canvas>
     </div>
 
     <script>
@@ -96,6 +112,7 @@
         fetch('data.json?t=' + new Date().getTime())
             .then(res => res.json())
             .then(data => {
+                // 填充基础数据
                 document.getElementById('update-time').innerText = "最后更新: " + data.update_time;
                 document.getElementById('current-hour').innerText = data.hour + ":00";
                 document.getElementById('max-temp').innerText = (data.realtime.max_temp !== null ? data.realtime.max_temp : '--') + " °C";
@@ -106,6 +123,7 @@
                 
                 if(data.model.error) return;
 
+                // 填充分布点和概率表
                 document.getElementById('quantile-row').innerHTML = `
                     <td>${data.model.quantiles.p05} °C</td>
                     <td>${data.model.quantiles.p25} °C</td>
@@ -133,6 +151,7 @@
                 });
                 document.getElementById('inst-tbody').innerHTML = instHtml;
 
+                // 绘制概率分布图
                 const ctxProb = document.getElementById('probChart').getContext('2d');
                 let sortedProbs = [...data.model.probabilities].sort((a, b) => a.temp - b.temp);
                 let probLabels = sortedProbs.map(item => item.temp + " °C");
@@ -158,11 +177,13 @@
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false, // 解除比例锁定
                         plugins: { legend: { display: false }, tooltip: { titleFont: { family: 'monospace' }, bodyFont: { size: 14, family: 'monospace' } } },
                         scales: { y: { beginAtZero: true, title: { display: true, text: 'Probability (%)' } }, x: { grid: { display: false } } }
                     }
                 });
 
+                // 绘制 24小时趋势图
                 const ctx = document.getElementById('tempChart').getContext('2d');
                 let datasets = [];
                 const colors = ['rgba(54, 162, 235, 0.4)', 'rgba(255, 159, 64, 0.4)', 'rgba(153, 102, 255, 0.4)', 'rgba(75, 192, 192, 0.4)', 'rgba(255, 205, 86, 0.4)', 'rgba(201, 203, 207, 0.4)', 'rgba(255, 99, 132, 0.4)'];
@@ -189,6 +210,7 @@
                     data: { labels: data.chart_data.hours, datasets: datasets },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false, // 解除比例锁定
                         interaction: { mode: 'index', intersect: false },
                         plugins: {
                             legend: { position: 'bottom', labels: { font: { size: 11, family: 'monospace' }, usePointStyle: true, boxWidth: 8 } },
@@ -206,4 +228,4 @@
             });
     </script>
 </body>
-</html>
+    </html>
