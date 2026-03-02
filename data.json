@@ -1,35 +1,35 @@
 {
-  "update_time": "2026-03-02 19:37:49 KST",
-  "hour": 19,
+  "update_time": "2026-03-02 20:22:01 KST",
+  "hour": 20,
   "realtime": {
-    "current_temp": 5.0,
+    "current_temp": 4.0,
     "max_temp": 6.0,
-    "forecast_mean": 3.11
+    "forecast_mean": 2.37
   },
   "institutions": [
     {
       "name": "ECMWF (欧洲)",
-      "temp": 2.8
-    },
-    {
-      "name": "GFS (美国)",
-      "temp": 3.5
-    },
-    {
-      "name": "ICON (德国)",
-      "temp": 3.2
-    },
-    {
-      "name": "JMA (日本)",
       "temp": 2.2
     },
     {
+      "name": "GFS (美国)",
+      "temp": 2.7
+    },
+    {
+      "name": "ICON (德国)",
+      "temp": 1.8
+    },
+    {
+      "name": "JMA (日本)",
+      "temp": 1.4
+    },
+    {
       "name": "UKMO (英国)",
-      "temp": 3.4
+      "temp": 3.1
     },
     {
       "name": "CMA (中国)",
-      "temp": 4.5
+      "temp": 4.0
     },
     {
       "name": "Best Match (综合)",
@@ -83,8 +83,8 @@
       5.0,
       5.0,
       5.0,
-      null,
-      null,
+      4.5,
+      4.0,
       null,
       null,
       null
@@ -184,12 +184,12 @@
         3.7,
         3.7,
         3.6,
+        3.6,
         3.3,
-        3.1,
-        2.8,
-        2.6,
-        2.2,
-        1.8,
+        2.9,
+        2.7,
+        1.9,
+        1.4,
         1.3,
         1.1,
         1.2
@@ -249,13 +249,13 @@
     }
   },
   "model": {
-    "median": 6.28,
+    "median": 6.31,
     "quantiles": {
-      "p05": 5.98,
-      "p25": 6.25,
-      "p50": 6.28,
-      "p75": 6.28,
-      "p95": 6.44
+      "p05": 5.9,
+      "p25": 6.21,
+      "p50": 6.31,
+      "p75": 6.37,
+      "p95": 6.4
     },
     "probabilities": [
       {
