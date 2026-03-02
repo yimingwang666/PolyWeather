@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-03-03 05:29:37 KST",
-  "hour": 5,
+  "update_time": "2026-03-03 06:01:52 KST",
+  "hour": 6,
   "realtime": {
     "current_temp": 2.0,
     "max_temp": 2.0,
@@ -70,7 +70,7 @@
       2.0,
       2.0,
       1.5,
-      null,
+      2.0,
       null,
       null,
       null,
@@ -250,30 +250,30 @@
     }
   },
   "model": {
-    "median": 8.01,
+    "median": 8.19,
     "quantiles": {
-      "p05": 5.82,
-      "p25": 7.17,
-      "p50": 8.01,
-      "p75": 8.51,
-      "p95": 8.83
+      "p05": 6.06,
+      "p25": 7.48,
+      "p50": 8.19,
+      "p75": 8.58,
+      "p95": 8.59
     },
     "probabilities": [
       {
         "temp": 8,
-        "prob": 39.54
+        "prob": 44.13
       },
       {
         "temp": 9,
-        "prob": 25.68
+        "prob": 30.32
       },
       {
         "temp": 7,
-        "prob": 19.74
+        "prob": 14.36
       },
       {
         "temp": 6,
-        "prob": 15.04
+        "prob": 11.19
       },
       {
         "temp": 10,
