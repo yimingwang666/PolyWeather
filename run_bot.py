@@ -180,18 +180,24 @@ def run_bot():
     
     # 输出 JSON
     output = {
-        "update_time": data['update_time'],
+        "update_time": str(data['update_time']),
         "hour": int(current_hour),
         "realtime": {
-            "current_temp": clean_float(data['wu_realtime']['temp']),
-            "max_temp": clean_float(data['wu_realtime']['max_temp_so_far']),
-            "forecast_mean": clean_float(df_features['forecast_temp_mean'].iloc[0])
+            "current_temp": float(data['wu_realtime']['temp']) if not pd.isna(data['wu_realtime']['temp']) else "N/A",
+            "max_temp": float(data['wu_realtime']['max_temp_so_far']) if not pd.isna(data['wu_realtime']['max_temp_so_far']) else "N/A",
+            "forecast_mean": float(round(df_features['forecast_temp_mean'].iloc[0], 2))
         },
         "institutions": inst_current,
         "chart_data": data['chart_data'],
         "model": {
-            "median": clean_float(median_temp),
-            "quantiles": { "p05": clean_float(raw_quantiles[0]), "p95": clean_float(raw_quantiles[4]) },
+            "median": float(round(median_temp, 2)),
+            "quantiles": {
+                "p05": float(round(raw_quantiles[0], 2)),
+                "p25": float(round(raw_quantiles[1], 2)),
+                "p50": float(round(raw_quantiles[2], 2)),
+                "p75": float(round(raw_quantiles[3], 2)),
+                "p95": float(round(raw_quantiles[4], 2))
+            },
             "probabilities": probs
         }
     }
@@ -202,3 +208,4 @@ def run_bot():
 if __name__ == "__main__":
     run_bot()
     print(f"数据更新完成，已写入 {OUTPUT_JSON}")
+
