@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-03 01:00:30 KST",
+  "update_time": "2026-03-03 01:58:16 KST",
   "hour": 1,
   "realtime": {
     "current_temp": 2.0,
@@ -65,8 +65,8 @@
       "23:00"
     ],
     "actual_temp": [
+      1.5,
       2.0,
-      null,
       null,
       null,
       null,
