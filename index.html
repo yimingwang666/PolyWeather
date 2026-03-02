@@ -4,38 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aether-Q Quant Terminal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; background-color: #f4f4f9; color: #111; padding: 20px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
-        h1 { font-size: 20px; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 5px; }
-        .time { font-size: 13px; color: #666; margin-bottom: 25px; }
-        h2 { font-size: 16px; margin-top: 30px; margin-bottom: 10px; background-color: #ddd; padding: 4px 8px; border-left: 4px solid #111;}
-        table { width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; font-size: 14px; }
-        th { background-color: #eaeaea; width: 45%; }
+        body { font-family: 'Courier New', Courier, monospace; background-color: #f4f4f9; color: #111; padding: 20px; max-width: 800px; margin: 0 auto; line-height: 1.5; }
+        h1 { font-size: 22px; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 5px; }
+        .time { font-size: 13px; color: #666; margin-bottom: 20px; }
+        h2 { font-size: 16px; margin-top: 30px; margin-bottom: 10px; background-color: #ddd; padding: 6px 10px; border-left: 4px solid #111;}
+        table { width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px;}
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 14px; }
+        th { background-color: #eaeaea; }
         .highlight { font-weight: bold; background-color: #e6f7e6; }
         .alert { color: #d9534f; font-weight: bold; }
+        
+        /* 图表容器 */
+        .chart-container { background: #fff; border: 1px solid #ccc; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        /* 响应式两列排版 */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <h1>Aether-Q Quant Terminal</h1>
+    <h1>Aether-Q Quant Terminal [In-Play]</h1>
     <div class="time" id="update-time">Connecting to engine...</div>
 
-    <h2>1. 实时数据探针 (RKSI)</h2>
-    <table>
-        <tr><th>数据切片时刻</th><td id="current-hour">--</td></tr>
-        <tr><th>今日截至目前最高温</th><td id="max-temp" class="alert">--</td></tr>
-        <tr><th>此时刻绝对温度</th><td id="cur-temp">--</td></tr>
-        <tr><th>七大超算预报均值</th><td id="for-mean">--</td></tr>
-    </table>
+    <div class="grid-2">
+        <div>
+            <h2>[ 实况探针 RKSI ]</h2>
+            <table>
+                <tr><th width="50%">数据切片时刻</th><td id="current-hour">--</td></tr>
+                <tr><th>今日最高温 (至今)</th><td id="max-temp" class="alert">--</td></tr>
+                <tr><th>此切片真实温度</th><td id="cur-temp">--</td></tr>
+                <tr><th>七大超算预报均值</th><td id="for-mean">--</td></tr>
+            </table>
+        </div>
+        
+        <div>
+            <h2>[ Aether-Q 主脑推演 ]</h2>
+            <table>
+                <tr><th width="50%">预测中位数 (50%)</th><td id="mod-median" class="highlight">--</td></tr>
+                <tr><th>极值区间 (5%~95%)</th><td id="mod-range">--</td></tr>
+            </table>
+        </div>
+    </div>
 
-    <h2>2. Aether-Q 原生概率推演</h2>
+    <h2>[ Polymarket 真实发生概率 ]</h2>
     <table>
-        <tr><th>预测中位数 (50%)</th><td id="mod-median" class="highlight">--</td></tr>
-        <tr><th>90% 置信区间 (5% - 95%)</th><td id="mod-range">--</td></tr>
-    </table>
-    
-    <table style="margin-top: 15px;">
         <thead>
             <tr>
                 <th style="background-color: #111; color: #fff;">结算温度 (°C)</th>
@@ -47,15 +62,32 @@
         </tbody>
     </table>
 
+    <h2>[ 七大超算本时刻预测明细 ]</h2>
+    <table>
+        <thead>
+            <tr><th>机构/模型</th><th>预测温度 (°C)</th></tr>
+        </thead>
+        <tbody id="inst-tbody">
+            <tr><td colspan="2">Awaiting data...</td></tr>
+        </tbody>
+    </table>
+
+    <h2>[ 物理实况 VS 机构预测 24H 追踪图 ]</h2>
+    <div class="chart-container">
+        <canvas id="tempChart" height="150"></canvas>
+    </div>
+
     <script>
+        let myChart = null;
+
         fetch('data.json?t=' + new Date().getTime())
             .then(res => res.json())
             .then(data => {
+                // 1. 填充基础数据
                 document.getElementById('update-time').innerText = "Last Update: " + data.update_time;
-                
                 document.getElementById('current-hour').innerText = data.hour + ":00 KST";
-                document.getElementById('max-temp').innerText = data.realtime.max_temp + " °C";
-                document.getElementById('cur-temp').innerText = data.realtime.current_temp + " °C";
+                document.getElementById('max-temp').innerText = (data.realtime.max_temp || '--') + " °C";
+                document.getElementById('cur-temp').innerText = (data.realtime.current_temp || '--') + " °C";
                 document.getElementById('for-mean').innerText = data.realtime.forecast_mean + " °C";
                 
                 if(data.model.error) {
@@ -66,18 +98,121 @@
                 document.getElementById('mod-median').innerText = data.model.median + " °C";
                 document.getElementById('mod-range').innerText = `[ ${data.model.quantiles.p05}°C  ~  ${data.model.quantiles.p95}°C ]`;
 
-                let tbodyHtml = "";
+                // 2. 填充盘口概率表
+                let probHtml = "";
                 data.model.probabilities.forEach((item, index) => {
                     let rowClass = index === 0 ? "highlight" : "";
-                    tbodyHtml += `<tr class="${rowClass}">
+                    probHtml += `<tr class="${rowClass}">
                         <td><strong>${item.temp} °C</strong></td>
-                        <td>${item.prob} %</td>
+                        <td>${item.prob.toFixed(1)} %</td>
                     </tr>`;
                 });
-                document.getElementById('prob-tbody').innerHTML = tbodyHtml;
+                document.getElementById('prob-tbody').innerHTML = probHtml;
+
+                // 3. 填充机构明细表
+                let instHtml = "";
+                data.institutions.forEach(inst => {
+                    instHtml += `<tr>
+                        <td>${inst.name}</td>
+                        <td>${inst.temp !== null ? inst.temp + " °C" : "--"}</td>
+                    </tr>`;
+                });
+                document.getElementById('inst-tbody').innerHTML = instHtml;
+
+                // 4. 绘制 Chart.js 折线图 (防面条图视觉升级版)
+                const ctx = document.getElementById('tempChart').getContext('2d');
+                
+                let datasets = [];
+                // 给 7 家机构分配更柔和、透明度更高的颜色
+                const colors = [
+                    'rgba(54, 162, 235, 0.4)', // 蓝
+                    'rgba(255, 159, 64, 0.4)', // 橙
+                    'rgba(153, 102, 255, 0.4)',// 紫
+                    'rgba(75, 192, 192, 0.4)', // 绿
+                    'rgba(255, 205, 86, 0.4)', // 黄
+                    'rgba(201, 203, 207, 0.4)',// 灰
+                    'rgba(255, 99, 132, 0.4)'  // 粉
+                ];
+                let colorIdx = 0;
+                
+                for (let [modelName, temps] of Object.entries(data.chart_data.forecasts)) {
+                    datasets.push({
+                        label: modelName,
+                        data: temps,
+                        borderColor: colors[colorIdx % colors.length],
+                        borderWidth: 1.5,
+                        borderDash: [4, 4], // 虚线
+                        pointRadius: 0,     // 隐藏数据点，避免杂乱
+                        tension: 0.4,       // 平滑曲线
+                        fill: false
+                    });
+                    colorIdx++;
+                }
+
+                // 霸道的真实机场实况线（加粗，纯正红色，带圆点）
+                datasets.push({
+                    label: '机场真实温度 (Actual)',
+                    data: data.chart_data.actual_temp,
+                    borderColor: '#ff0000',     // 纯红
+                    backgroundColor: '#ff0000',
+                    borderWidth: 3.5,           // 极粗
+                    pointRadius: 4,             // 突出圆点
+                    pointHoverRadius: 6,
+                    tension: 0.4,               // 平滑
+                    fill: false,
+                    zIndex: 999                 // 绝对置顶，压在所有预测线上面
+                });
+
+                if(myChart) myChart.destroy();
+                myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.chart_data.hours,
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        interaction: {
+                            mode: 'index',      // 鼠标放上去时，显示该时刻所有线的数据
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { 
+                                    font: { size: 11, family: 'monospace' },
+                                    usePointStyle: true, // 图例变成小圆点，更好看
+                                    boxWidth: 8
+                                }
+                            },
+                            tooltip: {
+                                // 悬浮窗样式优化
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14, family: 'monospace' },
+                                bodyFont: { size: 12, family: 'monospace' },
+                                padding: 10,
+                                cornerRadius: 4,
+                                itemSort: function(a, b) {
+                                    // 悬浮窗内的数据从温度高到低排序，一眼看出谁最激进
+                                    return b.raw - a.raw; 
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                title: { display: true, text: 'Temperature (°C)' },
+                                grid: { color: '#eee' }
+                            },
+                            x: {
+                                grid: { display: false } // 去掉X轴杂乱的网格线
+                            }
+                        }
+                    }
+                });
             })
             .catch(err => {
                 document.getElementById('update-time').innerText = "Error: Cannot fetch data.json.";
+                console.error(err);
             });
     </script>
 </body>
