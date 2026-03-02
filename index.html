@@ -28,20 +28,21 @@
 
     <div class="grid-2">
         <div>
-            <h2>[ 实时探针 RKSI ]</h2>
+            <h2>实况观测 (RKSI)</h2>
             <table>
-                <tr><th class="text-left" width="50%">数据切片时刻</th><td id="current-hour">--</td></tr>
-                <tr><th class="text-left">今日最高温(至今)</th><td id="max-temp" class="alert">--</td></tr>
-                <tr><th class="text-left">此时刻绝对温度</th><td id="cur-temp">--</td></tr>
-                <tr><th class="text-left">七大超算预报均值</th><td id="for-mean">--</td></tr>
+                <tr><th class="text-left" width="55%">当前时间 (KST)</th><td id="current-hour">--</td></tr>
+                <tr><th class="text-left">今日最高温 (截至目前)</th><td id="max-temp" class="alert">--</td></tr>
+                <tr><th class="text-left">当前温度</th><td id="cur-temp">--</td></tr>
+                <tr><th class="text-left">机构预测最高温均值</th><td id="for-mean" class="highlight">--</td></tr>
+                <tr><th class="text-left">机构预测标准差</th><td id="for-std">--</td></tr>
             </table>
         </div>
         
         <div>
-            <h2>[ Polymarket 胜率榜 ]</h2>
+            <h2>预测概率排名</h2>
             <table>
                 <thead>
-                    <tr><th class="text-left">结算温度</th><th>推演胜率</th></tr>
+                    <tr><th class="text-left">结算温度</th><th>预测概率</th></tr>
                 </thead>
                 <tbody id="prob-tbody">
                     <tr><td colspan="2">Awaiting data...</td></tr>
@@ -50,26 +51,40 @@
         </div>
     </div>
 
-    <h2>[ 厚尾分位点张量曝光 ]</h2>
+    <h2>模型预测分位点</h2>
     <table>
         <tr>
-            <th>5% (防暴跌)</th>
-            <th>25% (偏冷)</th>
+            <th>5% (极低)</th>
+            <th>25% (偏低)</th>
             <th class="highlight">50% (中位数)</th>
-            <th>75% (偏热)</th>
-            <th>95% (防暴涨)</th>
+            <th>75% (偏高)</th>
+            <th>95% (极高)</th>
         </tr>
         <tr id="quantile-row">
             <td>--</td><td>--</td><td>--</td><td>--</td><td>--</td>
         </tr>
     </table>
 
-    <h2>[ 盘口真实概率分布图 (Probability Distribution) ]</h2>
+    <h2>概率分布图</h2>
     <div class="chart-container">
         <canvas id="probChart" height="100"></canvas>
     </div>
+    
+    <div class="grid-2">
+        <div>
+            <h2>各机构最高温预测明细</h2>
+            <table>
+                <thead>
+                    <tr><th class="text-left">机构模型</th><th>预测最高温 (°C)</th></tr>
+                </thead>
+                <tbody id="inst-tbody">
+                    <tr><td colspan="2">Awaiting data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <h2>[ 物理实况 VS 机构预测 24H 追踪图 ]</h2>
+    <h2>实况与预测 24H 趋势图</h2>
     <div class="chart-container">
         <canvas id="tempChart" height="150"></canvas>
     </div>
@@ -81,15 +96,16 @@
         fetch('data.json?t=' + new Date().getTime())
             .then(res => res.json())
             .then(data => {
-                document.getElementById('update-time').innerText = "Last Update: " + data.update_time;
-                document.getElementById('current-hour').innerText = data.hour + ":00 KST";
-                document.getElementById('max-temp').innerText = (data.realtime.max_temp || '--') + " °C";
-                document.getElementById('cur-temp').innerText = (data.realtime.current_temp || '--') + " °C";
+                document.getElementById('update-time').innerText = "最后更新: " + data.update_time;
+                document.getElementById('current-hour').innerText = data.hour + ":00";
+                document.getElementById('max-temp').innerText = (data.realtime.max_temp !== null ? data.realtime.max_temp : '--') + " °C";
+                document.getElementById('cur-temp').innerText = (data.realtime.current_temp !== null ? data.realtime.current_temp : '--') + " °C";
+                
                 document.getElementById('for-mean').innerText = data.realtime.forecast_mean + " °C";
+                document.getElementById('for-std').innerText = data.realtime.forecast_std !== "N/A" ? "± " + data.realtime.forecast_std + " °C" : "--";
                 
                 if(data.model.error) return;
 
-                // 填充五大分位点
                 document.getElementById('quantile-row').innerHTML = `
                     <td>${data.model.quantiles.p05} °C</td>
                     <td>${data.model.quantiles.p25} °C</td>
@@ -98,7 +114,6 @@
                     <td>${data.model.quantiles.p95} °C</td>
                 `;
 
-                // 填充文字概率表
                 let probHtml = "";
                 data.model.probabilities.forEach((item, index) => {
                     let rowClass = index === 0 ? "highlight" : "";
@@ -109,16 +124,20 @@
                 });
                 document.getElementById('prob-tbody').innerHTML = probHtml;
 
-                // ==========================================
-                // 绘制 1：概率分布柱状图 (Bar Chart)
-                // ==========================================
+                let instHtml = "";
+                data.institutions.forEach(inst => {
+                    instHtml += `<tr>
+                        <td class="text-left">${inst.name}</td>
+                        <td><strong>${inst.temp !== null && inst.temp !== "N/A" ? inst.temp + " °C" : "--"}</strong></td>
+                    </tr>`;
+                });
+                document.getElementById('inst-tbody').innerHTML = instHtml;
+
                 const ctxProb = document.getElementById('probChart').getContext('2d');
-                // 图表必须按温度从小到大排序，符合人类直觉
                 let sortedProbs = [...data.model.probabilities].sort((a, b) => a.temp - b.temp);
                 let probLabels = sortedProbs.map(item => item.temp + " °C");
                 let probData = sortedProbs.map(item => item.prob);
                 
-                // 找到最大概率，把它标成高亮绿色，其他的标成灰色
                 let maxProb = Math.max(...probData);
                 let bgColors = probData.map(p => p === maxProb ? 'rgba(76, 175, 80, 0.7)' : 'rgba(100, 100, 100, 0.4)');
                 let borderColors = probData.map(p => p === maxProb ? 'rgba(76, 175, 80, 1)' : 'rgba(100, 100, 100, 0.8)');
@@ -129,7 +148,7 @@
                     data: {
                         labels: probLabels,
                         datasets: [{
-                            label: 'Aether-Q 真实发生概率 (%)',
+                            label: '预测概率 (%)',
                             data: probData,
                             backgroundColor: bgColors,
                             borderColor: borderColors,
@@ -139,23 +158,11 @@
                     },
                     options: {
                         responsive: true,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { 
-                                titleFont: { family: 'monospace' },
-                                bodyFont: { size: 14, family: 'monospace' }
-                            }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Probability (%)' } },
-                            x: { grid: { display: false } }
-                        }
+                        plugins: { legend: { display: false }, tooltip: { titleFont: { family: 'monospace' }, bodyFont: { size: 14, family: 'monospace' } } },
+                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Probability (%)' } }, x: { grid: { display: false } } }
                     }
                 });
 
-                // ==========================================
-                // 绘制 2：24小时实况与预测折线图
-                // ==========================================
                 const ctx = document.getElementById('tempChart').getContext('2d');
                 let datasets = [];
                 const colors = ['rgba(54, 162, 235, 0.4)', 'rgba(255, 159, 64, 0.4)', 'rgba(153, 102, 255, 0.4)', 'rgba(75, 192, 192, 0.4)', 'rgba(255, 205, 86, 0.4)', 'rgba(201, 203, 207, 0.4)', 'rgba(255, 99, 132, 0.4)'];
@@ -171,8 +178,8 @@
                 }
 
                 datasets.push({
-                    label: '机场真实温度 (Actual)', data: data.chart_data.actual_temp,
-                    borderColor: '#d9534f', backgroundColor: '#d9534f',
+                    label: '实际温度', data: data.chart_data.actual_temp,
+                    borderColor: '#ff0000', backgroundColor: '#ff0000',
                     borderWidth: 3.5, pointRadius: 4, pointHoverRadius: 6, tension: 0.4, fill: false, zIndex: 999
                 });
 
@@ -195,7 +202,7 @@
                 });
             })
             .catch(err => {
-                document.getElementById('update-time').innerText = "Error: Cannot fetch data.json.";
+                document.getElementById('update-time').innerText = "数据获取失败，请检查 data.json";
             });
     </script>
 </body>
