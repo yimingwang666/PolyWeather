@@ -11,12 +11,11 @@ from catboost import CatBoostRegressor
 import warnings
 warnings.filterwarnings('ignore')
 
-# === 配置项 ===
+# === 核心配置项 ===
 WU_API_KEY = "e1f10a1e78da46f5b10a1e78da96f525"
 MODEL_PATH = "rksi_model.cbm"
 OUTPUT_JSON = "data.json"
 
-# 映射名称，用于前端展示更清晰
 MODEL_NAMES = {
     'temperature_2m_ecmwf_ifs025': 'ECMWF (欧洲)',
     'temperature_2m_gfs_seamless': 'GFS (美国)',
@@ -28,7 +27,6 @@ MODEL_NAMES = {
 }
 
 def clean_float(val):
-    """清理异常浮点数，供 JSON 序列化"""
     if val is None or pd.isna(val) or math.isnan(val):
         return None
     return float(round(val, 2))
@@ -51,26 +49,23 @@ def fetch_realtime_data():
         if obs:
             df_wu = pd.DataFrame(obs)
             max_temp_so_far = df_wu['temp'].max()
-            
             latest = df_wu.iloc[-1]
-            current_temp = latest['temp']
-            rh = latest['rh']
-            wdir = latest['wdir']
-            wspd = latest['wspd']
-            pressure = latest['pressure']
+            current_temp = latest.get('temp', np.nan)
+            rh = latest.get('rh', np.nan)
+            wdir = latest.get('wdir', np.nan)
+            wspd = latest.get('wspd', np.nan)
+            pressure = latest.get('pressure', np.nan)
             
-            # 构建今日24小时真实温度曲线
             df_wu['datetime'] = pd.to_datetime(df_wu['valid_time_gmt'], unit='s', utc=True).dt.tz_convert('Asia/Seoul')
             df_wu['hr'] = df_wu['datetime'].dt.hour
             hourly_actual = df_wu.groupby('hr')['temp'].mean().to_dict()
             for h in range(24):
-                # 只有当前或之前的小时才有实际数据
                 if h <= current_hour:
                     actual_temp_24h[h] = clean_float(hourly_actual.get(h, None))
     except Exception as e:
-        print(f"Wunderground 失败: {e}")
+        print(f"Wunderground 获取失败: {e}")
 
-    # 2. 抓取 Open-Meteo 24小时预测
+    # 2. 抓取 Open-Meteo 24小时预测矩阵
     om_url = (
         "https://api.open-meteo.com/v1/forecast"
         "?latitude=37.49&longitude=126.49"
@@ -91,24 +86,18 @@ def fetch_realtime_data():
             feature_name = key.replace('_best_match', '_archive_best_match')
             om_data_current[feature_name] = values[current_hour]
             
-            # 如果是温度，保存全天 24 小时用于画图
             if key in MODEL_NAMES:
                 chart_forecasts[MODEL_NAMES[key]] = [clean_float(v) for v in values[:24]]
-                
     except Exception as e:
-        print(f"Open-Meteo 失败: {e}")
+        print(f"Open-Meteo 获取失败: {e}")
 
     return {
         "update_time": now.strftime('%Y-%m-%d %H:%M:%S KST'),
         "hour": current_hour,
         "month": now.month,
         "wu_realtime": {
-            "temp": current_temp,
-            "max_temp_so_far": max_temp_so_far,
-            "rh": rh,
-            "wdir": wdir,
-            "wspd": wspd,
-            "pressure": pressure
+            "temp": current_temp, "max_temp_so_far": max_temp_so_far,
+            "rh": rh, "wdir": wdir, "wspd": wspd, "pressure": pressure
         },
         "om_forecast": om_data_current,
         "chart_data": {
@@ -130,7 +119,7 @@ def run_bot():
     feature_dict['pressure'] = data['wu_realtime']['pressure']
     
     feature_dict.update(data['om_forecast'])
-    df_features = pd.DataFrame([feature_dict]).fillna(method='bfill', axis=1).fillna(0)
+    df_features = pd.DataFrame([feature_dict]).fillna(0) # 安全填充
     
     temp_cols = [c for c in df_features.columns if c.startswith('temperature_2m_')]
     df_features['forecast_temp_mean'] = df_features[temp_cols].mean(axis=1)
@@ -145,13 +134,28 @@ def run_bot():
     df_features['month_sin'] = np.sin(2 * np.pi * current_month / 12)
     df_features['month_cos'] = np.cos(2 * np.pi * current_month / 12)
     
-    # 提取用于前端展示的【当前时刻机构预测明细】
+    # === 核心修改：提取七大超算【今日全天最高温】及标准差 ===
     inst_current = []
-    for raw_col, display_name in MODEL_NAMES.items():
-        adj_col = raw_col.replace('_best_match', '_archive_best_match')
-        val = df_features[adj_col].iloc[0] if adj_col in df_features.columns else None
-        inst_current.append({"name": display_name, "temp": clean_float(val)})
+    daily_max_list = []
     
+    for raw_col, display_name in MODEL_NAMES.items():
+        daily_forecasts = data['chart_data']['forecasts'].get(display_name, [])
+        valid_temps = [t for t in daily_forecasts if t is not None]
+        
+        if valid_temps:
+            daily_max = max(valid_temps)
+            inst_current.append({"name": display_name, "temp": float(daily_max)})
+            daily_max_list.append(daily_max)
+        else:
+            inst_current.append({"name": display_name, "temp": "N/A"})
+            
+    if daily_max_list:
+        ui_forecast_mean = round(float(np.mean(daily_max_list)), 2)
+        ui_forecast_std = round(float(np.std(daily_max_list)), 2) # 计算分歧度 (标准差)
+    else:
+        ui_forecast_mean = "N/A"
+        ui_forecast_std = "N/A"
+
     # --- 模型推理 ---
     if not os.path.exists(MODEL_PATH):
         raise FileNotFoundError(f"找不到模型: {MODEL_PATH}")
@@ -176,27 +180,28 @@ def run_bot():
     for t in target_temps:
         prob = cdf_interp(t + 0.5) - cdf_interp(t - 0.5)
         probs.append({"temp": int(t), "prob": clean_float(prob * 100)})
+        
     probs = sorted(probs, key=lambda x: x['prob'], reverse=True)
     
-    # 输出 JSON
     output = {
         "update_time": str(data['update_time']),
         "hour": int(current_hour),
         "realtime": {
-            "current_temp": float(data['wu_realtime']['temp']) if not pd.isna(data['wu_realtime']['temp']) else "N/A",
-            "max_temp": float(data['wu_realtime']['max_temp_so_far']) if not pd.isna(data['wu_realtime']['max_temp_so_far']) else "N/A",
-            "forecast_mean": float(round(df_features['forecast_temp_mean'].iloc[0], 2))
+            "current_temp": clean_float(data['wu_realtime']['temp']),
+            "max_temp": clean_float(data['wu_realtime']['max_temp_so_far']),
+            "forecast_mean": ui_forecast_mean,
+            "forecast_std": ui_forecast_std  # 传给前端的标准差
         },
         "institutions": inst_current,
         "chart_data": data['chart_data'],
         "model": {
-            "median": float(round(median_temp, 2)),
+            "median": clean_float(median_temp),
             "quantiles": {
-                "p05": float(round(raw_quantiles[0], 2)),
-                "p25": float(round(raw_quantiles[1], 2)),
-                "p50": float(round(raw_quantiles[2], 2)),
-                "p75": float(round(raw_quantiles[3], 2)),
-                "p95": float(round(raw_quantiles[4], 2))
+                "p05": clean_float(raw_quantiles[0]),
+                "p25": clean_float(raw_quantiles[1]),
+                "p50": clean_float(raw_quantiles[2]),
+                "p75": clean_float(raw_quantiles[3]),
+                "p95": clean_float(raw_quantiles[4])
             },
             "probabilities": probs
         }
@@ -208,4 +213,3 @@ def run_bot():
 if __name__ == "__main__":
     run_bot()
     print(f"数据更新完成，已写入 {OUTPUT_JSON}")
-
