@@ -136,29 +136,31 @@ def run_bot():
     alphas = [0.05, 0.25, 0.5, 0.75, 0.95]
     cdf_interp = interp1d(raw_quantiles, alphas, kind='linear', bounds_error=False, fill_value=(0.0, 1.0))
     
+    # 预测前后各 2 个整数的概率
     target_temps = [int(median_temp)-2, int(median_temp)-1, int(median_temp), int(median_temp)+1, int(median_temp)+2]
     
     probs = []
     for t in target_temps:
         prob = cdf_interp(t + 0.5) - cdf_interp(t - 0.5)
-        probs.append({"temp": t, "prob": round(prob * 100, 1)})
+        # ⚠️ 修复：强制转换为 Python 原生 int 和 float
+        probs.append({"temp": int(t), "prob": float(round(prob * 100, 1))})
         
     probs = sorted(probs, key=lambda x: x['prob'], reverse=True)
     
-    # 汇总输出
+    # ⚠️ 修复：全面套用 float() 和 int()，洗掉所有的 numpy 类型残留
     output = {
-        "update_time": data['update_time'],
-        "hour": current_hour,
+        "update_time": str(data['update_time']),
+        "hour": int(current_hour),
         "realtime": {
-            "current_temp": data['wu_realtime']['temp'],
-            "max_temp": data['wu_realtime']['max_temp_so_far'],
-            "forecast_mean": round(df_features['forecast_temp_mean'].iloc[0], 2)
+            "current_temp": float(data['wu_realtime']['temp']) if not pd.isna(data['wu_realtime']['temp']) else "N/A",
+            "max_temp": float(data['wu_realtime']['max_temp_so_far']) if not pd.isna(data['wu_realtime']['max_temp_so_far']) else "N/A",
+            "forecast_mean": float(round(df_features['forecast_temp_mean'].iloc[0], 2))
         },
         "model": {
-            "median": round(median_temp, 2),
+            "median": float(round(median_temp, 2)),
             "quantiles": {
-                "p05": round(raw_quantiles[0], 2),
-                "p95": round(raw_quantiles[4], 2)
+                "p05": float(round(raw_quantiles[0], 2)),
+                "p95": float(round(raw_quantiles[4], 2))
             },
             "probabilities": probs
         }
