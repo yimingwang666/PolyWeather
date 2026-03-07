@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-07 16:38:53 KST",
+  "update_time": "2026-03-07 16:54:28 KST",
   "hour": 16,
   "realtime": {
     "current_temp": 4.0,
@@ -252,7 +252,7 @@
   "model": {
     "median": 4.78,
     "quantiles": {
-      "p05": 4.52,
+      "p05": 4.54,
       "p25": 4.7,
       "p50": 4.78,
       "p75": 4.9,
