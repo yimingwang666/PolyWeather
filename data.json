@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-08 20:43:48 KST",
+  "update_time": "2026-03-08 20:56:29 KST",
   "hour": 20,
   "realtime": {
     "current_temp": 2.0,
@@ -85,7 +85,7 @@
       3.0,
       2.5,
       2.0,
-      null,
+      2.0,
       null,
       null,
       null
@@ -252,10 +252,10 @@
   "model": {
     "median": 4.18,
     "quantiles": {
-      "p05": 4.15,
-      "p25": 4.16,
+      "p05": 4.14,
+      "p25": 4.15,
       "p50": 4.18,
-      "p75": 4.29,
+      "p75": 4.28,
       "p95": 4.31
     },
     "probabilities": [
