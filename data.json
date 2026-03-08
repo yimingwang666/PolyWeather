@@ -1,8 +1,8 @@
 {
-  "update_time": "2026-03-08 23:19:48 KST",
+  "update_time": "2026-03-08 23:46:03 KST",
   "hour": 23,
   "realtime": {
-    "current_temp": 2.0,
+    "current_temp": 3.0,
     "max_temp": 4.0,
     "forecast_mean": 3.72,
     "forecast_std": 0.28
@@ -87,8 +87,8 @@
       2.0,
       2.0,
       2.0,
-      2.0,
-      null
+      2.5,
+      3.0
     ],
     "forecasts": {
       "ECMWF (欧洲)": [
@@ -250,22 +250,22 @@
     }
   },
   "model": {
-    "median": 4.47,
+    "median": 4.57,
     "quantiles": {
       "p05": 4.22,
-      "p25": 4.28,
-      "p50": 4.47,
-      "p75": 4.49,
-      "p95": 4.52
+      "p25": 4.52,
+      "p50": 4.57,
+      "p75": 4.58,
+      "p95": 4.68
     },
     "probabilities": [
       {
-        "temp": 4,
-        "prob": 80.97
+        "temp": 5,
+        "prob": 76.54
       },
       {
-        "temp": 5,
-        "prob": 19.03
+        "temp": 4,
+        "prob": 23.46
       },
       {
         "temp": 2,
