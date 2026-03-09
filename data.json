@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-10 06:38:11 KST",
+  "update_time": "2026-03-10 06:58:49 KST",
   "hour": 6,
   "realtime": {
     "current_temp": 0.0,
@@ -250,30 +250,30 @@
     }
   },
   "model": {
-    "median": 7.57,
+    "median": 7.58,
     "quantiles": {
       "p05": 6.26,
-      "p25": 7.28,
-      "p50": 7.57,
+      "p25": 7.29,
+      "p50": 7.58,
       "p75": 7.84,
       "p95": 8.7
     },
     "probabilities": [
       {
         "temp": 8,
-        "prob": 46.62
+        "prob": 46.97
       },
       {
         "temp": 7,
-        "prob": 33.99
-      },
-      {
-        "temp": 6,
-        "prob": 9.72
+        "prob": 33.65
       },
       {
         "temp": 9,
-        "prob": 9.67
+        "prob": 9.74
+      },
+      {
+        "temp": 6,
+        "prob": 9.64
       },
       {
         "temp": 5,
