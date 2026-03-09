@@ -1,11 +1,11 @@
 {
-  "update_time": "2026-03-09 20:25:10 KST",
+  "update_time": "2026-03-09 20:54:30 KST",
   "hour": 20,
   "realtime": {
     "current_temp": 4.0,
     "max_temp": 7.0,
-    "forecast_mean": 6.05,
-    "forecast_std": 0.85
+    "forecast_mean": 6.03,
+    "forecast_std": 0.83
   },
   "institutions": [
     {
@@ -14,7 +14,7 @@
     },
     {
       "name": "GFS (美国)",
-      "temp": 7.2
+      "temp": 7.1
     },
     {
       "name": "ICON (德国)",
@@ -85,7 +85,7 @@
       6.5,
       5.5,
       4.5,
-      null,
+      4.0,
       null,
       null,
       null
@@ -133,15 +133,15 @@
         6.0,
         6.5,
         6.9,
-        7.2,
+        7.1,
         7.1,
         6.7,
-        5.4,
+        5.5,
         4.2,
         3.4,
         2.7,
         2.3,
-        2.0
+        1.8
       ],
       "ICON (德国)": [
         3.6,
@@ -250,22 +250,22 @@
     }
   },
   "model": {
-    "median": 6.84,
+    "median": 6.85,
     "quantiles": {
       "p05": 6.49,
-      "p25": 6.74,
-      "p50": 6.84,
-      "p75": 7.07,
-      "p95": 7.23
+      "p25": 6.75,
+      "p50": 6.85,
+      "p75": 7.05,
+      "p95": 7.18
     },
     "probabilities": [
       {
         "temp": 7,
-        "prob": 94.16
+        "prob": 93.98
       },
       {
         "temp": 6,
-        "prob": 5.84
+        "prob": 6.02
       },
       {
         "temp": 4,
