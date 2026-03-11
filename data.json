@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-03-11 19:23:25 KST",
-  "hour": 19,
+  "update_time": "2026-03-11 20:05:33 KST",
+  "hour": 20,
   "realtime": {
     "current_temp": 3.0,
     "max_temp": 6.0,
@@ -250,12 +250,12 @@
     }
   },
   "model": {
-    "median": 6.13,
+    "median": 6.11,
     "quantiles": {
-      "p05": 6.03,
-      "p25": 6.04,
-      "p50": 6.13,
-      "p75": 6.16,
+      "p05": 5.98,
+      "p25": 6.03,
+      "p50": 6.11,
+      "p75": 6.17,
       "p95": 6.17
     },
     "probabilities": [
