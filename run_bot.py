@@ -1,215 +1,198 @@
-import requests
-import pandas as pd
-import numpy as np
-import json
 import os
+import re
+import json
 import math
-from datetime import datetime
+import logging
+import requests
+import numpy as np
+import pandas as pd
+from datetime import datetime, timedelta
 import pytz
 from scipy.interpolate import interp1d
 from catboost import CatBoostRegressor
 import warnings
+
 warnings.filterwarnings('ignore')
 
-# === 核心配置项 ===
+# === Logging Configuration (Optimized for Daemon/Cronjob) ===
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+logger = logging.getLogger(__name__)
+
+# === Global Constants ===
 WU_API_KEY = "e1f10a1e78da46f5b10a1e78da96f525"
-MODEL_PATH = "rksi_model.cbm"
-OUTPUT_JSON = "data.json"
+MODELS_DIR = "models"
+CONFIG_FILE = "config.js"
 
 MODEL_NAMES = {
-    'temperature_2m_ecmwf_ifs025': 'ECMWF (欧洲)',
-    'temperature_2m_gfs_seamless': 'GFS (美国)',
-    'temperature_2m_icon_seamless': 'ICON (德国)',
-    'temperature_2m_jma_seamless': 'JMA (日本)',
-    'temperature_2m_ukmo_seamless': 'UKMO (英国)',
-    'temperature_2m_cma_grapes_global': 'CMA (中国)',
-    'temperature_2m_archive_best_match': 'Best Match (综合)'
+    'temperature_2m_ecmwf_ifs025': 'ECMWF (EU)',
+    'temperature_2m_gfs_seamless': 'GFS (US)',
+    'temperature_2m_icon_seamless': 'ICON (DE)',
+    'temperature_2m_jma_seamless': 'JMA (JP)',
+    'temperature_2m_ukmo_seamless': 'UKMO (UK)',
+    'temperature_2m_cma_grapes_global': 'CMA (CN)'
 }
 
+# === Core Utility Functions ===
 def clean_float(val):
-    if val is None or pd.isna(val) or math.isnan(val):
-        return None
-    return float(round(val, 2))
+    return float(round(val, 2)) if val is not None and not pd.isna(val) and not math.isnan(val) else None
 
-def fetch_realtime_data():
-    tz = pytz.timezone('Asia/Seoul')
-    now = datetime.now(tz)
-    today_str = now.strftime('%Y%m%d')
-    current_hour = now.hour
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        logger.error(f"Config file {CONFIG_FILE} not found.")
+        return {}
+    with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+        match = re.search(r'const\s+CITY_CONFIG\s*=\s*(\{.*?\});', f.read(), re.DOTALL)
+        if match:
+            clean_json = re.sub(r',\s*}', '}', match.group(1))
+            return json.loads(clean_json)
+    logger.error("Failed to parse config.js.")
+    return {}
+
+# === Data Ingestion Pipeline ===
+def fetch_data(city_id, cfg, local_time):
+    today = local_time.strftime('%Y%m%d')
+    om_today = local_time.strftime('%Y-%m-%d')
+    unit_wu = "e" if cfg.get('unit') == "F" else "m"
     
-    # 1. 抓取 Wunderground (RKSI) 实况数据
-    wu_url = f"https://api.weather.com/v1/location/RKSI:9:KR/observations/historical.json?apiKey={WU_API_KEY}&units=m&startDate={today_str}&endDate={today_str}"
-    
-    current_temp = max_temp_so_far = rh = wdir = wspd = pressure = np.nan
+    # 1. Fetch Wunderground (Live Actuals)
+    wu_data = {"temp": np.nan, "max_temp_so_far": np.nan, "rh": np.nan, "wdir": np.nan, "wspd": np.nan, "pressure": np.nan}
     actual_temp_24h = [None] * 24
-    
-    try:
-        wu_resp = requests.get(wu_url, timeout=15).json()
-        obs = wu_resp.get('observations', [])
-        if obs:
-            df_wu = pd.DataFrame(obs)
-            max_temp_so_far = df_wu['temp'].max()
-            latest = df_wu.iloc[-1]
-            current_temp = latest.get('temp', np.nan)
-            rh = latest.get('rh', np.nan)
-            wdir = latest.get('wdir', np.nan)
-            wspd = latest.get('wspd', np.nan)
-            pressure = latest.get('pressure', np.nan)
-            
-            df_wu['datetime'] = pd.to_datetime(df_wu['valid_time_gmt'], unit='s', utc=True).dt.tz_convert('Asia/Seoul')
-            df_wu['hr'] = df_wu['datetime'].dt.hour
-            hourly_actual = df_wu.groupby('hr')['temp'].mean().to_dict()
-            for h in range(24):
-                if h <= current_hour:
-                    actual_temp_24h[h] = clean_float(hourly_actual.get(h, None))
-    except Exception as e:
-        print(f"Wunderground 获取失败: {e}")
+    wu_success = False
 
-    # 2. 抓取 Open-Meteo 24小时预测矩阵
-    om_url = (
-        "https://api.open-meteo.com/v1/forecast"
-        "?latitude=37.49&longitude=126.49"
-        "&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,surface_pressure,cloud_cover,wind_speed_10m,wind_direction_10m,shortwave_radiation"
-        "&models=ecmwf_ifs025,gfs_seamless,icon_seamless,jma_seamless,ukmo_seamless,cma_grapes_global,best_match"
-        "&timezone=Asia%2FSeoul&forecast_days=1"
-    )
-    
-    om_data_current = {}
-    chart_forecasts = {}
-    
+    wu_url = f"https://api.weather.com/v1/location/{cfg['wu_code']}/observations/historical.json?apiKey={WU_API_KEY}&units={unit_wu}&startDate={today}&endDate={today}"
+    try:
+        resp = requests.get(wu_url, timeout=10)
+        if resp.status_code == 200 and 'observations' in resp.json():
+            df_wu = pd.DataFrame(resp.json()['observations'])
+            if not df_wu.empty:
+                latest = df_wu.iloc[-1]
+                wu_data.update({
+                    "max_temp_so_far": df_wu['temp'].max(),
+                    "temp": latest.get('temp', np.nan), "rh": latest.get('rh', np.nan),
+                    "wdir": latest.get('wdir', np.nan), "wspd": latest.get('wspd', np.nan),
+                    "pressure": latest.get('pressure', np.nan)
+                })
+                df_wu['datetime'] = pd.to_datetime(df_wu['valid_time_gmt'], unit='s', utc=True).dt.tz_convert(cfg['tz'])
+                hourly_actual = df_wu.groupby(df_wu['datetime'].dt.hour)['temp'].mean().to_dict()
+                actual_temp_24h = [clean_float(hourly_actual.get(h)) if h <= local_time.hour else None for h in range(24)]
+                wu_success = True
+    except Exception as e:
+        logger.warning(f"{city_id} WU fetch failed: {e}")
+
+    # 2. Fetch Open-Meteo (Forecasts & Fallback Actuals)
+    tz_enc = cfg['tz'].replace('/', '%2F')
+    om_url = (f"https://api.open-meteo.com/v1/forecast?latitude={cfg['lat']}&longitude={cfg['lon']}"
+              f"&hourly={','.join(MODEL_NAMES.keys())}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m"
+              f"&timezone={tz_enc}&forecast_days=2")
+    if cfg.get('unit') == "F":
+        om_url += "&temperature_unit=fahrenheit&wind_speed_unit=mph"
+
     try:
         om_resp = requests.get(om_url, timeout=15).json()
-        hourly = om_resp.get('hourly', {})
+        df_om = pd.DataFrame(om_resp['hourly'])
+        df_om['time'] = pd.to_datetime(df_om['time'])
         
-        for key, values in hourly.items():
-            if key == 'time': continue
-            feature_name = key.replace('_best_match', '_archive_best_match')
-            om_data_current[feature_name] = values[current_hour]
-            
-            if key in MODEL_NAMES:
-                chart_forecasts[MODEL_NAMES[key]] = [clean_float(v) for v in values[:24]]
+        # OM Fallback mechanism if WU fails
+        if not wu_success:
+            cur = om_resp.get('current', {})
+            wu_data.update({
+                "temp": cur.get('temperature_2m', np.nan), "rh": cur.get('relative_humidity_2m', np.nan),
+                "pressure": cur.get('surface_pressure', np.nan), "wspd": cur.get('wind_speed_10m', np.nan),
+                "wdir": cur.get('wind_direction_10m', np.nan)
+            })
+            df_past = df_om[(df_om['time'].dt.strftime('%Y-%m-%d') == om_today) & (df_om['time'].dt.hour <= local_time.hour)]
+            if not df_past.empty:
+                wu_data['max_temp_so_far'] = max(wu_data['temp'], df_past[list(MODEL_NAMES.keys())[0]].max())
+        return wu_data, actual_temp_24h, df_om
     except Exception as e:
-        print(f"Open-Meteo 获取失败: {e}")
+        logger.error(f"{city_id} OM fetch failed: {e}")
+        return None, None, None
+
+# === Feature Engineering & Model Inference ===
+def build_inference(model, target_date, is_tomorrow, wu_data, df_om, local_time, actual_temp_24h):
+    df_day = df_om[df_om['time'].dt.strftime('%Y-%m-%d') == target_date].copy()
+    if df_day.empty: return None
+    
+    daily_maxes = {f"daily_max_forecast_{m}": df_day[m].max() for m in MODEL_NAMES.keys()}
+
+    if is_tomorrow:
+        target_hour = 0
+        current_temp = max_so_far = daily_maxes[f"daily_max_forecast_{list(MODEL_NAMES.keys())[0]}"]
+        rh = wdir = wspd = pressure = 0
+    else:
+        target_hour = local_time.hour
+        current_temp, max_so_far = wu_data['temp'], wu_data['max_temp_so_far']
+        rh, wdir, wspd, pressure = wu_data['rh'], wu_data['wdir'], wu_data['wspd'], wu_data['pressure']
+
+    hour_slice = df_day[df_day['time'].dt.hour == target_hour].iloc[0]
+    features = {'temp': current_temp, 'max_temp_so_far': max_so_far, 'rh': rh, 'wdir': wdir, 'wspd': wspd, 'pressure': pressure}
+    
+    model_preds = [hour_slice[m] for m in MODEL_NAMES.keys() if not pd.isna(hour_slice[m])]
+    features.update({m: hour_slice[m] for m in MODEL_NAMES.keys()})
+    features['forecast_temp_mean'] = np.mean(model_preds) if model_preds else np.nan
+    features['forecast_temp_std'] = np.std(model_preds) if model_preds else np.nan
+    features.update(daily_maxes)
+    
+    dt_obj = datetime.strptime(target_date, '%Y-%m-%d')
+    features.update({
+        'hour': target_hour, 'month': dt_obj.month,
+        'hour_sin': np.sin(2 * np.pi * target_hour / 24), 'hour_cos': np.cos(2 * np.pi * target_hour / 24),
+        'month_sin': np.sin(2 * np.pi * dt_obj.month / 12), 'month_cos': np.cos(2 * np.pi * dt_obj.month / 12)
+    })
+    
+    df_x = pd.DataFrame([features]).fillna(0)
+    for c in model.feature_names_:
+        if c not in df_x.columns: df_x[c] = 0.0
+    
+    # Execute Quantile Regression
+    quantiles = np.sort(model.predict(df_x[model.feature_names_])[0])
+    median = quantiles[2]
+    
+    # CDF Integration for Pricing
+    cdf = interp1d(quantiles, [0.05, 0.25, 0.5, 0.75, 0.95], kind='linear', bounds_error=False, fill_value=(0.0, 1.0))
+    targets = [int(median)-2, int(median)-1, int(median), int(median)+1, int(median)+2]
+    probs = sorted([{"temp": t, "prob": clean_float((cdf(t+0.5) - cdf(t-0.5)) * 100)} for t in targets], key=lambda x: x['prob'], reverse=True)
+
+    inst_res, max_vals = [], []
+    for k, v in MODEL_NAMES.items():
+        val = daily_maxes[f"daily_max_forecast_{k}"]
+        inst_res.append({"name": v, "temp": clean_float(val)})
+        if not pd.isna(val): max_vals.append(val)
 
     return {
-        "update_time": now.strftime('%Y-%m-%d %H:%M:%S KST'),
-        "hour": current_hour,
-        "month": now.month,
-        "wu_realtime": {
-            "temp": current_temp, "max_temp_so_far": max_temp_so_far,
-            "rh": rh, "wdir": wdir, "wspd": wspd, "pressure": pressure
-        },
-        "om_forecast": om_data_current,
-        "chart_data": {
-            "hours": [f"{i:02d}:00" for i in range(24)],
-            "actual_temp": actual_temp_24h,
-            "forecasts": chart_forecasts
-        }
+        "date": target_date,
+        "realtime": {"current_temp": clean_float(current_temp), "max_temp": clean_float(max_so_far), "forecast_mean": clean_float(np.mean(max_vals)) if max_vals else "N/A", "forecast_std": clean_float(np.std(max_vals)) if max_vals else "N/A"},
+        "institutions": inst_res,
+        "chart_data": {"hours": [f"{i:02d}:00" for i in range(24)], "actual_temp": actual_temp_24h if not is_tomorrow else [None]*24, "forecasts": {v: [clean_float(x) for x in df_day[k].values] for k, v in MODEL_NAMES.items()}},
+        "model": {"median": clean_float(median), "quantiles": {"p05": clean_float(quantiles[0]), "p25": clean_float(quantiles[1]), "p50": clean_float(quantiles[2]), "p75": clean_float(quantiles[3]), "p95": clean_float(quantiles[4])}, "probabilities": probs}
     }
 
-def run_bot():
-    data = fetch_realtime_data()
-    feature_dict = {}
+# === Master Orchestrator ===
+def process_city(city_id, cfg):
+    model_path = os.path.join(MODELS_DIR, f"{city_id}_model.cbm")
+    if not os.path.exists(model_path): return
     
-    feature_dict['temp'] = data['wu_realtime']['temp']
-    feature_dict['max_temp_so_far'] = data['wu_realtime']['max_temp_so_far']
-    feature_dict['rh'] = data['wu_realtime']['rh']
-    feature_dict['wdir'] = data['wu_realtime']['wdir']
-    feature_dict['wspd'] = data['wu_realtime']['wspd']
-    feature_dict['pressure'] = data['wu_realtime']['pressure']
+    tz = pytz.timezone(cfg['tz'])
+    now = datetime.now(tz)
+    wu_data, actual_24h, df_om = fetch_data(city_id, cfg, now)
+    if df_om is None: return
     
-    feature_dict.update(data['om_forecast'])
-    df_features = pd.DataFrame([feature_dict]).fillna(0) # 安全填充
+    model = CatBoostRegressor().load_model(model_path)
+    res_today = build_inference(model, now.strftime('%Y-%m-%d'), False, wu_data, df_om, now, actual_24h)
+    res_tomorrow = build_inference(model, (now + timedelta(days=1)).strftime('%Y-%m-%d'), True, wu_data, df_om, now, actual_24h)
     
-    temp_cols = [c for c in df_features.columns if c.startswith('temperature_2m_')]
-    df_features['forecast_temp_mean'] = df_features[temp_cols].mean(axis=1)
-    df_features['forecast_temp_std'] = df_features[temp_cols].std(axis=1)
-    
-    current_hour = data['hour']
-    current_month = data['month']
-    df_features['hour'] = current_hour
-    df_features['month'] = current_month
-    df_features['hour_sin'] = np.sin(2 * np.pi * current_hour / 24)
-    df_features['hour_cos'] = np.cos(2 * np.pi * current_hour / 24)
-    df_features['month_sin'] = np.sin(2 * np.pi * current_month / 12)
-    df_features['month_cos'] = np.cos(2 * np.pi * current_month / 12)
-    
-    # === 核心修改：提取七大超算【今日全天最高温】及标准差 ===
-    inst_current = []
-    daily_max_list = []
-    
-    for raw_col, display_name in MODEL_NAMES.items():
-        daily_forecasts = data['chart_data']['forecasts'].get(display_name, [])
-        valid_temps = [t for t in daily_forecasts if t is not None]
-        
-        if valid_temps:
-            daily_max = max(valid_temps)
-            inst_current.append({"name": display_name, "temp": float(daily_max)})
-            daily_max_list.append(daily_max)
-        else:
-            inst_current.append({"name": display_name, "temp": "N/A"})
-            
-    if daily_max_list:
-        ui_forecast_mean = round(float(np.mean(daily_max_list)), 2)
-        ui_forecast_std = round(float(np.std(daily_max_list)), 2) # 计算分歧度 (标准差)
-    else:
-        ui_forecast_mean = "N/A"
-        ui_forecast_std = "N/A"
-
-    # --- 模型推理 ---
-    if not os.path.exists(MODEL_PATH):
-        raise FileNotFoundError(f"找不到模型: {MODEL_PATH}")
-
-    model = CatBoostRegressor()
-    model.load_model(MODEL_PATH)
-    
-    expected_cols = model.feature_names_
-    for c in expected_cols:
-        if c not in df_features.columns:
-            df_features[c] = 0.0
-    X_live = df_features[expected_cols]
-
-    raw_quantiles = np.sort(model.predict(X_live)[0])
-    median_temp = raw_quantiles[2]
-    
-    alphas = [0.05, 0.25, 0.5, 0.75, 0.95]
-    cdf_interp = interp1d(raw_quantiles, alphas, kind='linear', bounds_error=False, fill_value=(0.0, 1.0))
-    target_temps = [int(median_temp)-2, int(median_temp)-1, int(median_temp), int(median_temp)+1, int(median_temp)+2]
-    
-    probs = []
-    for t in target_temps:
-        prob = cdf_interp(t + 0.5) - cdf_interp(t - 0.5)
-        probs.append({"temp": int(t), "prob": clean_float(prob * 100)})
-        
-    probs = sorted(probs, key=lambda x: x['prob'], reverse=True)
-    
-    output = {
-        "update_time": str(data['update_time']),
-        "hour": int(current_hour),
-        "realtime": {
-            "current_temp": clean_float(data['wu_realtime']['temp']),
-            "max_temp": clean_float(data['wu_realtime']['max_temp_so_far']),
-            "forecast_mean": ui_forecast_mean,
-            "forecast_std": ui_forecast_std  # 传给前端的标准差
-        },
-        "institutions": inst_current,
-        "chart_data": data['chart_data'],
-        "model": {
-            "median": clean_float(median_temp),
-            "quantiles": {
-                "p05": clean_float(raw_quantiles[0]),
-                "p25": clean_float(raw_quantiles[1]),
-                "p50": clean_float(raw_quantiles[2]),
-                "p75": clean_float(raw_quantiles[3]),
-                "p95": clean_float(raw_quantiles[4])
-            },
-            "probabilities": probs
-        }
-    }
-    
-    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    if res_today and res_tomorrow:
+        output_file = f"{city_id}_data.json"
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump({"update_time": datetime.now(pytz.utc).strftime('%Y-%m-%d %H:%M:%S UTC'), "hour": now.hour, "today": res_today, "tomorrow": res_tomorrow}, f, ensure_ascii=False, indent=2)
+        logger.info(f"Successfully updated payload for {city_id.upper()}")
 
 if __name__ == "__main__":
-    run_bot()
-    print(f"数据更新完成，已写入 {OUTPUT_JSON}")
+    logger.info("Initializing PolyWeather Inference Engine...")
+    configs = load_config()
+    for cid, cfg in configs.items():
+        try:
+            process_city(cid, cfg)
+        except Exception as e:
+            logger.error(f"Critical error processing {cid}: {e}")
+    logger.info("Routine complete.")
