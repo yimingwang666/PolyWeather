@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # === Global Constants ===
 WU_API_KEY = "e1f10a1e78da46f5b10a1e78da96f525"
 MODELS_DIR = "models"
+DATA_DIR = "data"
 CONFIG_FILE = "config.js"
 
 MODEL_NAMES = {
@@ -81,14 +82,26 @@ def fetch_data(city_id, cfg, local_time):
 
     # 2. Fetch Open-Meteo (Forecasts & Fallback Actuals)
     tz_enc = cfg['tz'].replace('/', '%2F')
+    
+    # Extract dynamic models string for correct OM API syntax
+    models_str = ",".join([k.replace('temperature_2m_', '') for k in MODEL_NAMES.keys()])
+    
     om_url = (f"https://api.open-meteo.com/v1/forecast?latitude={cfg['lat']}&longitude={cfg['lon']}"
-              f"&hourly={','.join(MODEL_NAMES.keys())}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m"
+              f"&hourly=temperature_2m&models={models_str}"
+              f"&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m"
               f"&timezone={tz_enc}&forecast_days=2")
+              
     if cfg.get('unit') == "F":
         om_url += "&temperature_unit=fahrenheit&wind_speed_unit=mph"
 
     try:
         om_resp = requests.get(om_url, timeout=15).json()
+        
+        # Intercept OM specific API errors gracefully
+        if 'error' in om_resp:
+            logger.error(f"{city_id} OM API Error: {om_resp.get('reason')}")
+            return None, None, None
+            
         df_om = pd.DataFrame(om_resp['hourly'])
         df_om['time'] = pd.to_datetime(df_om['time'])
         
@@ -103,6 +116,7 @@ def fetch_data(city_id, cfg, local_time):
             df_past = df_om[(df_om['time'].dt.strftime('%Y-%m-%d') == om_today) & (df_om['time'].dt.hour <= local_time.hour)]
             if not df_past.empty:
                 wu_data['max_temp_so_far'] = max(wu_data['temp'], df_past[list(MODEL_NAMES.keys())[0]].max())
+                
         return wu_data, actual_temp_24h, df_om
     except Exception as e:
         logger.error(f"{city_id} OM fetch failed: {e}")
@@ -182,17 +196,27 @@ def process_city(city_id, cfg):
     res_tomorrow = build_inference(model, (now + timedelta(days=1)).strftime('%Y-%m-%d'), True, wu_data, df_om, now, actual_24h)
     
     if res_today and res_tomorrow:
-        output_file = f"{city_id}_data.json"
+        output_file = os.path.join(DATA_DIR, f"{city_id}_data.json")
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump({"update_time": datetime.now(pytz.utc).strftime('%Y-%m-%d %H:%M:%S UTC'), "hour": now.hour, "today": res_today, "tomorrow": res_tomorrow}, f, ensure_ascii=False, indent=2)
-        logger.info(f"Successfully updated payload for {city_id.upper()}")
+        logger.info(f"Updated {city_id.upper()}")
 
 if __name__ == "__main__":
     logger.info("Initializing PolyWeather Inference Engine...")
+    
+    if not os.path.exists(MODELS_DIR):
+        os.makedirs(MODELS_DIR)
+        logger.info(f"Created missing directory: {MODELS_DIR}/")
+        
+    if not os.path.exists(DATA_DIR):
+        os.makedirs(DATA_DIR)
+        logger.info(f"Created missing directory: {DATA_DIR}/")
+
     configs = load_config()
     for cid, cfg in configs.items():
         try:
             process_city(cid, cfg)
         except Exception as e:
             logger.error(f"Critical error processing {cid}: {e}")
+            
     logger.info("Routine complete.")
