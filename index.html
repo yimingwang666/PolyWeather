@@ -68,6 +68,7 @@
                 <tr><th class="text-left">Max Temp So Far</th><td id="max-temp" class="alert">--</td></tr>
                 <tr><th class="text-left">Current / Baseline Temp</th><td id="cur-temp">--</td></tr>
                 <tr><th class="text-left">Supercomputer Consensus</th><td id="for-mean" class="highlight">--</td></tr>
+                <tr><th class="text-left">Consensus Std Dev</th><td id="for-std">--</td></tr>
             </table>
         </div>
         
@@ -88,12 +89,32 @@
 
     <h2>Probability Density Function (PDF)</h2>
     <div class="chart-container"><canvas id="probChart"></canvas></div>
+    
+    <div class="grid-2">
+        <div>
+            <h2>Agency Forecast Details</h2>
+            <table>
+                <thead>
+                    <tr><th class="text-left">Agency/Model</th><th>Forecast (<span class="unit-display">°C</span>)</th></tr>
+                </thead>
+                <tbody id="inst-tbody">
+                    <tr><td colspan="2">Awaiting data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h2>24H Trend: Actual vs Forecast</h2>
+    <div class="chart-container">
+        <canvas id="tempChart"></canvas>
+    </div>
 
     <script>
+        let myChart = null;
         let myProbChart = null;
         let currentCityId = null;
         let currentDateTab = 'today';
-        let globalWeatherData = null; // Stores JSON payload
+        let globalWeatherData = null; 
         let clockInterval = null;
 
         // 1. Initialize System
@@ -120,7 +141,7 @@
                 document.getElementById('local-clock').innerText = `Local Time: ${timeString} (${tz.split('/')[1].replace('_', ' ')})`;
             };
             updateClock();
-            clockInterval = setInterval(updateClock, 60000); // Update every minute
+            clockInterval = setInterval(updateClock, 60000); 
         }
 
         // 3. Fetch JSON Data
@@ -166,7 +187,6 @@
             const config = CITY_CONFIG[currentCityId];
             const unit = config.unit;
             
-            // Extract the right chunk of data (today or tomorrow)
             const targetData = globalWeatherData[currentDateTab];
             
             document.querySelectorAll('.loc-code').forEach(el => el.innerText = config.code);
@@ -175,7 +195,9 @@
             document.getElementById('target-date').innerText = targetData.date;
             document.getElementById('max-temp').innerText = (targetData.realtime.max_temp !== null ? targetData.realtime.max_temp : '--') + ` ${unit}`;
             document.getElementById('cur-temp').innerText = (targetData.realtime.current_temp !== null ? targetData.realtime.current_temp : '--') + ` ${unit}`;
+            
             document.getElementById('for-mean').innerText = targetData.realtime.forecast_mean + ` ${unit}`;
+            document.getElementById('for-std').innerText = targetData.realtime.forecast_std !== "N/A" ? "± " + targetData.realtime.forecast_std + ` ${unit}` : "--";
 
             // Render Quantiles
             document.getElementById('quantile-row').innerHTML = `
@@ -189,7 +211,7 @@
             // Render Probabilities
             let probHtml = "";
             targetData.model.probabilities.forEach((item, index) => {
-                let rowClass = index === 0 ? "highlight" : ""; // Highest prob gets highlight
+                let rowClass = index === 0 ? "highlight" : ""; 
                 probHtml += `<tr class="${rowClass}">
                     <td class="text-left"><strong>${item.temp} ${unit}</strong></td>
                     <td>${item.prob.toFixed(1)} %</td>
@@ -197,7 +219,17 @@
             });
             document.getElementById('prob-tbody').innerHTML = probHtml;
 
-            // Render Chart
+            // Render Institutions 
+            let instHtml = "";
+            targetData.institutions.forEach(inst => {
+                instHtml += `<tr>
+                    <td class="text-left">${inst.name}</td>
+                    <td><strong>${inst.temp !== null && inst.temp !== "N/A" ? inst.temp + ` ${unit}` : "--"}</strong></td>
+                </tr>`;
+            });
+            document.getElementById('inst-tbody').innerHTML = instHtml;
+
+            // Render Probability Chart
             const ctxProb = document.getElementById('probChart').getContext('2d');
             let sortedProbs = [...targetData.model.probabilities].sort((a, b) => a.temp - b.temp);
             let probLabels = sortedProbs.map(item => item.temp + ` ${unit}`);
@@ -216,6 +248,40 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+
+            // Render 24H Trend Chart
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            let datasets = [];
+            const colors = ['rgba(54, 162, 235, 0.4)', 'rgba(255, 159, 64, 0.4)', 'rgba(153, 102, 255, 0.4)', 'rgba(75, 192, 192, 0.4)', 'rgba(255, 205, 86, 0.4)', 'rgba(201, 203, 207, 0.4)'];
+            let colorIdx = 0;
+            
+            for (let [modelName, temps] of Object.entries(targetData.chart_data.forecasts)) {
+                datasets.push({
+                    label: modelName, data: temps, borderColor: colors[colorIdx % colors.length],
+                    borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, tension: 0.4, fill: false
+                });
+                colorIdx++;
+            }
+
+            datasets.push({
+                label: 'Actual Temp', data: targetData.chart_data.actual_temp,
+                borderColor: '#ff0000', backgroundColor: '#ff0000',
+                borderWidth: 3.5, pointRadius: 4, pointHoverRadius: 6, tension: 0.4, fill: false, zIndex: 999
+            });
+
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: targetData.chart_data.hours, datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 11, family: 'monospace' }, usePointStyle: true, boxWidth: 8 } },
+                        tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', titleFont: { size: 14, family: 'monospace' }, bodyFont: { size: 12, family: 'monospace' }, padding: 10, cornerRadius: 4, itemSort: function(a, b) { return b.raw - a.raw; } }
+                    },
+                    scales: { y: { title: { display: true, text: `Temperature (${unit})` }, grid: { color: '#eee' } }, x: { grid: { display: false } } }
                 }
             });
         }
