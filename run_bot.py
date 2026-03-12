@@ -127,11 +127,12 @@ def build_inference(model, target_date, is_tomorrow, wu_data, df_om, local_time,
     df_day = df_om[df_om['time'].dt.strftime('%Y-%m-%d') == target_date].copy()
     if df_day.empty: return None
     
-    daily_maxes = {f"daily_max_forecast_{m}": df_day[m].max() for m in MODEL_NAMES.keys()}
+    daily_maxes = {f"daily_max_forecast_{m.replace('temperature_2m_', '')}": df_day[m].max() for m in MODEL_NAMES.keys()}
 
     if is_tomorrow:
         target_hour = 0
-        current_temp = max_so_far = daily_maxes[f"daily_max_forecast_{list(MODEL_NAMES.keys())[0]}"]
+        hour_0_slice = df_day[df_day['time'].dt.hour == 0].iloc[0]
+        current_temp = max_so_far = hour_0_slice[list(MODEL_NAMES.keys())[0]]
         rh = wdir = wspd = pressure = 0
     else:
         target_hour = local_time.hour
@@ -158,8 +159,12 @@ def build_inference(model, target_date, is_tomorrow, wu_data, df_om, local_time,
     for c in model.feature_names_:
         if c not in df_x.columns: df_x[c] = 0.0
     
-    # Execute Quantile Regression
+    # === Execute Quantile Regression ===
     quantiles = np.sort(model.predict(df_x[model.feature_names_])[0])
+    
+    if not is_tomorrow and not pd.isna(max_so_far):
+        quantiles = np.maximum(quantiles, max_so_far)
+        
     median = quantiles[2]
     
     # CDF Integration for Pricing
@@ -169,7 +174,7 @@ def build_inference(model, target_date, is_tomorrow, wu_data, df_om, local_time,
 
     inst_res, max_vals = [], []
     for k, v in MODEL_NAMES.items():
-        val = daily_maxes[f"daily_max_forecast_{k}"]
+        val = daily_maxes[f"daily_max_forecast_{k.replace('temperature_2m_', '')}"]
         inst_res.append({"name": v, "temp": clean_float(val)})
         if not pd.isna(val): max_vals.append(val)
 
