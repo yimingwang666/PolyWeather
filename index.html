@@ -1,15 +1,36 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PolyWeather</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script> 
+    
     <style>
         body { font-family: 'Courier New', Courier, monospace; background-color: #f4f4f9; color: #111; padding: 20px; max-width: 800px; margin: 0 auto; line-height: 1.5; }
-        h1 { font-size: 22px; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 5px; }
-        .time { font-size: 13px; color: #666; margin-bottom: 20px; }
-        h2 { font-size: 16px; margin-top: 30px; margin-bottom: 10px; background-color: #ddd; padding: 6px 10px; border-left: 4px solid #111;}
+        
+        .header-console { border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 15px; }
+        h1 { font-size: 22px; margin: 0 0 10px 0; }
+        
+        /* City Tabs */
+        .tabs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .city-tab { font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; padding: 6px 12px; background-color: #ddd; color: #333; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .city-tab:hover { background-color: #ccc; }
+        .city-tab.active { background-color: #111; color: #00ff00; border-color: #111; }
+
+        /* Date Tabs (Today / Tomorrow) */
+        .date-tabs-container { display: flex; gap: 10px; margin-bottom: 15px; }
+        .date-tab { font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; padding: 8px 20px; background-color: #e0e0e0; border: 2px solid #aaa; border-radius: 4px; cursor: pointer; }
+        .date-tab.active { background-color: #fff; border-color: #111; color: #111; border-bottom: 3px solid #006600; }
+
+        /* Live Clock & Status */
+        .status-bar { display: flex; justify-content: space-between; align-items: center; background: #111; color: #fff; padding: 8px 15px; border-radius: 4px; margin-bottom: 20px; }
+        .clock-display { font-size: 16px; font-weight: bold; color: #00ff00; }
+        .status-indicator { font-weight: bold; color: #00ff00; }
+        .status-loading { color: #ff4444; }
+        
+        h2 { font-size: 16px; margin-top: 20px; margin-bottom: 10px; background-color: #ddd; padding: 6px 10px; border-left: 4px solid #111;}
         table { width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px;}
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 14px; }
         th { background-color: #eaeaea; }
@@ -17,215 +38,189 @@
         .alert { color: #d9534f; font-weight: bold; }
         .text-left { text-align: left; }
         
-        /* 图表容器响应式高度 */
-        .chart-container { 
-            position: relative; 
-            background: #fff; 
-            border: 1px solid #ccc; 
-            padding: 15px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-            margin-bottom: 15px;
-            height: 350px;
-            width: auto;
-        }
+        .chart-container { position: relative; background: #fff; border: 1px solid #ccc; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; height: 350px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        /* 手机端适配 */
-        @media (max-width: 600px) { 
-            .grid-2 { grid-template-columns: 1fr; } 
-            .chart-container { height: 280px; } 
-        }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } .chart-container { height: 280px; } .city-tab { flex-grow: 1; text-align: center; } }
     </style>
 </head>
 <body>
 
-    <h1>PolyWeather</h1>
-    <div class="time" id="update-time">Connecting to engine...</div>
+    <div class="header-console">
+        <h1>PolyWeather</h1>
+        <div id="city-tabs" class="tabs-container"></div>
+    </div>
+    
+    <div class="status-bar">
+        <div class="clock-display" id="local-clock">Local Time: --:--</div>
+        <div id="data-status" class="status-indicator">STANDBY</div>
+    </div>
+
+    <div class="date-tabs-container">
+        <button id="tab-today" class="date-tab active" onclick="switchDate('today')">Today</button>
+        <button id="tab-tomorrow" class="date-tab" onclick="switchDate('tomorrow')">Tomorrow</button>
+    </div>
 
     <div class="grid-2">
         <div>
-            <h2>实况观测 (RKSI)</h2>
+            <h2>Terminal Data (<span class="loc-code">--</span>)</h2>
             <table>
-                <tr><th class="text-left" width="55%">当前时间 (KST)</th><td id="current-hour">--</td></tr>
-                <tr><th class="text-left">今日最高温 (截至目前)</th><td id="max-temp" class="alert">--</td></tr>
-                <tr><th class="text-left">当前温度</th><td id="cur-temp">--</td></tr>
-                <tr><th class="text-left">机构预测最高温均值</th><td id="for-mean" class="highlight">--</td></tr>
-                <tr><th class="text-left">机构预测标准差</th><td id="for-std">--</td></tr>
+                <tr><th class="text-left" width="55%">Target Date</th><td id="target-date" class="highlight">--</td></tr>
+                <tr><th class="text-left">Max Temp So Far</th><td id="max-temp" class="alert">--</td></tr>
+                <tr><th class="text-left">Current / Baseline Temp</th><td id="cur-temp">--</td></tr>
+                <tr><th class="text-left">Supercomputer Consensus</th><td id="for-mean" class="highlight">--</td></tr>
             </table>
         </div>
         
         <div>
-            <h2>预测概率排名</h2>
+            <h2>Probability Ranking</h2>
             <table>
-                <thead>
-                    <tr><th class="text-left">结算温度</th><th>预测概率</th></tr>
-                </thead>
-                <tbody id="prob-tbody">
-                    <tr><td colspan="2">Awaiting data...</td></tr>
-                </tbody>
+                <thead><tr><th class="text-left">Strike Temp</th><th>Implied Prob</th></tr></thead>
+                <tbody id="prob-tbody"><tr><td colspan="2">Awaiting data...</td></tr></tbody>
             </table>
         </div>
     </div>
 
-    <h2>模型预测分位点</h2>
+    <h2>Quantile Spread (<span class="unit-display">°C</span>)</h2>
     <table>
-        <tr>
-            <th>5%</th>
-            <th>25%</th>
-            <th class="highlight">50%</th>
-            <th>75%</th>
-            <th>95%</th>
-        </tr>
-        <tr id="quantile-row">
-            <td>--</td><td>--</td><td>--</td><td>--</td><td>--</td>
-        </tr>
+        <tr><th>5%</th><th>25%</th><th class="highlight">50%</th><th>75%</th><th>95%</th></tr>
+        <tr id="quantile-row"><td>--</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
     </table>
 
-    <h2>概率分布图</h2>
-    <div class="chart-container">
-        <canvas id="probChart"></canvas>
-    </div>
-    
-    <div class="grid-2">
-        <div>
-            <h2>各机构最高温预测明细</h2>
-            <table>
-                <thead>
-                    <tr><th class="text-left">机构模型</th><th>预测最高温 (°C)</th></tr>
-                </thead>
-                <tbody id="inst-tbody">
-                    <tr><td colspan="2">Awaiting data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <h2>实况与预测 24H 趋势图</h2>
-    <div class="chart-container">
-        <canvas id="tempChart"></canvas>
-    </div>
+    <h2>Probability Density Function (PDF)</h2>
+    <div class="chart-container"><canvas id="probChart"></canvas></div>
 
     <script>
-        let myChart = null;
         let myProbChart = null;
+        let currentCityId = null;
+        let currentDateTab = 'today';
+        let globalWeatherData = null; // Stores JSON payload
+        let clockInterval = null;
 
-        fetch('data.json?t=' + new Date().getTime())
-            .then(res => res.json())
-            .then(data => {
-                // 填充基础数据
-                document.getElementById('update-time').innerText = "最后更新: " + data.update_time;
-                document.getElementById('current-hour').innerText = data.hour + ":00";
-                document.getElementById('max-temp').innerText = (data.realtime.max_temp !== null ? data.realtime.max_temp : '--') + " °C";
-                document.getElementById('cur-temp').innerText = (data.realtime.current_temp !== null ? data.realtime.current_temp : '--') + " °C";
-                
-                document.getElementById('for-mean').innerText = data.realtime.forecast_mean + " °C";
-                document.getElementById('for-std').innerText = data.realtime.forecast_std !== "N/A" ? "± " + data.realtime.forecast_std + " °C" : "--";
-                
-                if(data.model.error) return;
+        // 1. Initialize System
+        function initSystem() {
+            const container = document.getElementById('city-tabs');
+            let isFirst = true;
+            for (let [id, info] of Object.entries(CITY_CONFIG)) {
+                let btn = document.createElement('button');
+                btn.className = 'city-tab';
+                btn.id = 'tab-' + id;
+                btn.innerText = info.code + " " + info.name;
+                btn.onclick = () => fetchCityData(id);
+                container.appendChild(btn);
+                if (isFirst) { fetchCityData(id); isFirst = false; }
+            }
+        }
 
-                // 填充分布点和概率表
-                document.getElementById('quantile-row').innerHTML = `
-                    <td>${data.model.quantiles.p05} °C</td>
-                    <td>${data.model.quantiles.p25} °C</td>
-                    <td class="highlight">${data.model.quantiles.p50} °C</td>
-                    <td>${data.model.quantiles.p75} °C</td>
-                    <td>${data.model.quantiles.p95} °C</td>
-                `;
+        // 2. Live Local Clock Engine
+        function startLiveClock(tz) {
+            if (clockInterval) clearInterval(clockInterval);
+            const updateClock = () => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { timeZone: tz, hour12: false, hour: '2-digit', minute: '2-digit' });
+                document.getElementById('local-clock').innerText = `Local Time: ${timeString} (${tz.split('/')[1].replace('_', ' ')})`;
+            };
+            updateClock();
+            clockInterval = setInterval(updateClock, 60000); // Update every minute
+        }
 
-                let probHtml = "";
-                data.model.probabilities.forEach((item, index) => {
-                    let rowClass = index === 0 ? "highlight" : "";
-                    probHtml += `<tr class="${rowClass}">
-                        <td class="text-left"><strong>${item.temp} °C</strong></td>
-                        <td>${item.prob.toFixed(1)} %</td>
-                    </tr>`;
+        // 3. Fetch JSON Data
+        function fetchCityData(cityId) {
+            currentCityId = cityId;
+            const config = CITY_CONFIG[cityId];
+            
+            document.querySelectorAll('.city-tab').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + cityId).classList.add('active');
+            
+            startLiveClock(config.tz);
+            
+            document.getElementById('data-status').innerText = "FETCHING JSON...";
+            document.getElementById('data-status').className = "status-loading";
+
+            fetch(`${cityId}_data.json?t=` + new Date().getTime())
+                .then(res => { if (!res.ok) throw new Error("404"); return res.json(); })
+                .then(data => {
+                    globalWeatherData = data;
+                    document.getElementById('data-status').innerText = "LIVE (SYNCED)";
+                    document.getElementById('data-status').className = "status-indicator";
+                    renderData();
+                })
+                .catch(err => {
+                    globalWeatherData = null;
+                    document.getElementById('data-status').innerText = "OFFLINE";
+                    document.getElementById('data-status').className = "status-loading";
                 });
-                document.getElementById('prob-tbody').innerHTML = probHtml;
+        }
 
-                let instHtml = "";
-                data.institutions.forEach(inst => {
-                    instHtml += `<tr>
-                        <td class="text-left">${inst.name}</td>
-                        <td><strong>${inst.temp !== null && inst.temp !== "N/A" ? inst.temp + " °C" : "--"}</strong></td>
-                    </tr>`;
-                });
-                document.getElementById('inst-tbody').innerHTML = instHtml;
+        // 4. Switch Between Today & Tomorrow
+        function switchDate(dayMode) {
+            currentDateTab = dayMode;
+            document.getElementById('tab-today').classList.remove('active');
+            document.getElementById('tab-tomorrow').classList.remove('active');
+            document.getElementById('tab-' + dayMode).classList.add('active');
+            if (globalWeatherData) renderData();
+        }
 
-                // 绘制概率分布图
-                const ctxProb = document.getElementById('probChart').getContext('2d');
-                let sortedProbs = [...data.model.probabilities].sort((a, b) => a.temp - b.temp);
-                let probLabels = sortedProbs.map(item => item.temp + " °C");
-                let probData = sortedProbs.map(item => item.prob);
-                
-                let maxProb = Math.max(...probData);
-                let bgColors = probData.map(p => p === maxProb ? 'rgba(76, 175, 80, 0.7)' : 'rgba(100, 100, 100, 0.4)');
-                let borderColors = probData.map(p => p === maxProb ? 'rgba(76, 175, 80, 1)' : 'rgba(100, 100, 100, 0.8)');
+        // 5. Render UI
+        function renderData() {
+            if (!globalWeatherData) return;
+            const config = CITY_CONFIG[currentCityId];
+            const unit = config.unit;
+            
+            // Extract the right chunk of data (today or tomorrow)
+            const targetData = globalWeatherData[currentDateTab];
+            
+            document.querySelectorAll('.loc-code').forEach(el => el.innerText = config.code);
+            document.querySelectorAll('.unit-display').forEach(el => el.innerText = unit);
+            
+            document.getElementById('target-date').innerText = targetData.date;
+            document.getElementById('max-temp').innerText = (targetData.realtime.max_temp !== null ? targetData.realtime.max_temp : '--') + ` ${unit}`;
+            document.getElementById('cur-temp').innerText = (targetData.realtime.current_temp !== null ? targetData.realtime.current_temp : '--') + ` ${unit}`;
+            document.getElementById('for-mean').innerText = targetData.realtime.forecast_mean + ` ${unit}`;
 
-                if(myProbChart) myProbChart.destroy();
-                myProbChart = new Chart(ctxProb, {
-                    type: 'bar',
-                    data: {
-                        labels: probLabels,
-                        datasets: [{
-                            label: '预测概率 (%)',
-                            data: probData,
-                            backgroundColor: bgColors,
-                            borderColor: borderColors,
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false, // 解除比例锁定
-                        plugins: { legend: { display: false }, tooltip: { titleFont: { family: 'monospace' }, bodyFont: { size: 14, family: 'monospace' } } },
-                        scales: { y: { beginAtZero: true, title: { display: true, text: 'Probability (%)' } }, x: { grid: { display: false } } }
-                    }
-                });
+            // Render Quantiles
+            document.getElementById('quantile-row').innerHTML = `
+                <td>${targetData.model.quantiles.p05}</td>
+                <td>${targetData.model.quantiles.p25}</td>
+                <td class="highlight">${targetData.model.quantiles.p50}</td>
+                <td>${targetData.model.quantiles.p75}</td>
+                <td>${targetData.model.quantiles.p95}</td>
+            `;
 
-                // 绘制 24小时趋势图
-                const ctx = document.getElementById('tempChart').getContext('2d');
-                let datasets = [];
-                const colors = ['rgba(54, 162, 235, 0.4)', 'rgba(255, 159, 64, 0.4)', 'rgba(153, 102, 255, 0.4)', 'rgba(75, 192, 192, 0.4)', 'rgba(255, 205, 86, 0.4)', 'rgba(201, 203, 207, 0.4)', 'rgba(255, 99, 132, 0.4)'];
-                let colorIdx = 0;
-                
-                for (let [modelName, temps] of Object.entries(data.chart_data.forecasts)) {
-                    datasets.push({
-                        label: modelName, data: temps,
-                        borderColor: colors[colorIdx % colors.length],
-                        borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, tension: 0.4, fill: false
-                    });
-                    colorIdx++;
-                }
-
-                datasets.push({
-                    label: '实际温度', data: data.chart_data.actual_temp,
-                    borderColor: '#ff0000', backgroundColor: '#ff0000',
-                    borderWidth: 3.5, pointRadius: 4, pointHoverRadius: 6, tension: 0.4, fill: false, zIndex: 999
-                });
-
-                if(myChart) myChart.destroy();
-                myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: { labels: data.chart_data.hours, datasets: datasets },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false, // 解除比例锁定
-                        interaction: { mode: 'index', intersect: false },
-                        plugins: {
-                            legend: { position: 'bottom', labels: { font: { size: 11, family: 'monospace' }, usePointStyle: true, boxWidth: 8 } },
-                            tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', titleFont: { size: 14, family: 'monospace' }, bodyFont: { size: 12, family: 'monospace' }, padding: 10, cornerRadius: 4, itemSort: function(a, b) { return b.raw - a.raw; } }
-                        },
-                        scales: {
-                            y: { title: { display: true, text: 'Temperature (°C)' }, grid: { color: '#eee' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-            })
-            .catch(err => {
-                document.getElementById('update-time').innerText = "数据获取失败，请检查 data.json";
+            // Render Probabilities
+            let probHtml = "";
+            targetData.model.probabilities.forEach((item, index) => {
+                let rowClass = index === 0 ? "highlight" : ""; // Highest prob gets highlight
+                probHtml += `<tr class="${rowClass}">
+                    <td class="text-left"><strong>${item.temp} ${unit}</strong></td>
+                    <td>${item.prob.toFixed(1)} %</td>
+                </tr>`;
             });
+            document.getElementById('prob-tbody').innerHTML = probHtml;
+
+            // Render Chart
+            const ctxProb = document.getElementById('probChart').getContext('2d');
+            let sortedProbs = [...targetData.model.probabilities].sort((a, b) => a.temp - b.temp);
+            let probLabels = sortedProbs.map(item => item.temp + ` ${unit}`);
+            let probData = sortedProbs.map(item => item.prob);
+            let maxProb = Math.max(...probData);
+            let bgColors = probData.map(p => p === maxProb ? 'rgba(76, 175, 80, 0.7)' : 'rgba(100, 100, 100, 0.4)');
+
+            if(myProbChart) myProbChart.destroy();
+            myProbChart = new Chart(ctxProb, {
+                type: 'bar',
+                data: {
+                    labels: probLabels,
+                    datasets: [{ label: 'Win Probability (%)', data: probData, backgroundColor: bgColors, borderWidth: 1, borderRadius: 4 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+        }
+
+        window.onload = initSystem;
     </script>
 </body>
-    </html>
+</html>
