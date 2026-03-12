@@ -157,7 +157,7 @@
             document.getElementById('data-status').innerText = "FETCHING JSON...";
             document.getElementById('data-status').className = "status-loading";
 
-            fetch(`${cityId}_data.json?t=` + new Date().getTime())
+            fetch(`data/${cityId}_data.json?t=` + new Date().getTime())
                 .then(res => { if (!res.ok) throw new Error("404"); return res.json(); })
                 .then(data => {
                     globalWeatherData = data;
