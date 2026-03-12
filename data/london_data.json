@@ -1,12 +1,12 @@
 {
-  "update_time": "2026-03-12 20:18:31 UTC",
+  "update_time": "2026-03-12 20:55:25 UTC",
   "hour": 20,
   "today": {
     "date": "2026-03-12",
     "realtime": {
       "current_temp": 11.7,
       "max_temp": 11.7,
-      "forecast_mean": 12.17,
+      "forecast_mean": 12.15,
       "forecast_std": 0.45
     },
     "institutions": [
@@ -28,7 +28,7 @@
       },
       {
         "name": "UKMO (UK)",
-        "temp": 12.0
+        "temp": 11.9
       },
       {
         "name": "CMA (CN)",
@@ -210,14 +210,14 @@
           11.9,
           11.2,
           11.5,
-          11.6,
-          11.6,
-          11.9,
-          12.0,
-          11.9,
+          11.5,
+          11.5,
+          11.8,
+          11.8,
           11.7,
-          11.9,
-          12.0
+          11.5,
+          11.6,
+          11.8
         ],
         "CMA (CN)": [
           4.9,
@@ -285,7 +285,7 @@
     "realtime": {
       "current_temp": 11.4,
       "max_temp": 11.4,
-      "forecast_mean": 11.78,
+      "forecast_mean": 11.77,
       "forecast_std": 0.78
     },
     "institutions": [
@@ -307,7 +307,7 @@
       },
       {
         "name": "UKMO (UK)",
-        "temp": 12.1
+        "temp": 12.0
       },
       {
         "name": "CMA (CN)",
@@ -473,11 +473,11 @@
           4.7
         ],
         "UKMO (UK)": [
-          12.1,
+          11.9,
           12.0,
-          11.8,
-          9.1,
-          7.0,
+          11.7,
+          9.3,
+          7.3,
           6.9,
           6.6,
           6.5,
