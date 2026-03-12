@@ -1,4 +1,4 @@
-name: Quant Bot (10 Min)
+name: Quant Bot
 
 on:
   schedule:
@@ -12,26 +12,26 @@ jobs:
   run-bot:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出仓库代码
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: 设置 Python 3.10
+      - name: Setup Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 安装量化依赖
+      - name: Install Quant Dependencies
         run: |
           pip install requests pandas numpy scipy catboost pytz
 
-      - name: 运行主脑模型
+      - name: Execute Inference Engine
         run: |
           python run_bot.py
 
-      - name: 提交并推送最新盘口数据
+      - name: Commit and Push Market Data
         run: |
-          git config --global user.name "Aether-Bot"
+          git config --global user.name "quant bot"
           git config --global user.email "bot@quant.com"
-          git add data.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto: Update probabilities"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto: Update global market probabilities"
           git push
