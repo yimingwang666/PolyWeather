@@ -190,14 +190,14 @@
             const targetData = globalWeatherData[currentDateTab];
             
             document.querySelectorAll('.loc-code').forEach(el => el.innerText = config.code);
-            document.querySelectorAll('.unit-display').forEach(el => el.innerText = unit);
+            document.querySelectorAll('.unit-display').forEach(el => el.innerText = '°' + unit);
             
             document.getElementById('target-date').innerText = targetData.date;
-            document.getElementById('max-temp').innerText = (targetData.realtime.max_temp !== null ? targetData.realtime.max_temp : '--') + ` ${unit}`;
-            document.getElementById('cur-temp').innerText = (targetData.realtime.current_temp !== null ? targetData.realtime.current_temp : '--') + ` ${unit}`;
+            document.getElementById('max-temp').innerText = (targetData.realtime.max_temp !== null ? targetData.realtime.max_temp : '--') + ` °${unit}`;
+            document.getElementById('cur-temp').innerText = (targetData.realtime.current_temp !== null ? targetData.realtime.current_temp : '--') + ` °${unit}`;
             
-            document.getElementById('for-mean').innerText = targetData.realtime.forecast_mean + ` ${unit}`;
-            document.getElementById('for-std').innerText = targetData.realtime.forecast_std !== "N/A" ? "± " + targetData.realtime.forecast_std + ` ${unit}` : "--";
+            document.getElementById('for-mean').innerText = targetData.realtime.forecast_mean + ` °${unit}`;
+            document.getElementById('for-std').innerText = targetData.realtime.forecast_std !== "N/A" ? "± " + targetData.realtime.forecast_std + ` °${unit}` : "--";
 
             // Render Quantiles
             document.getElementById('quantile-row').innerHTML = `
@@ -213,7 +213,7 @@
             targetData.model.probabilities.forEach((item, index) => {
                 let rowClass = index === 0 ? "highlight" : ""; 
                 probHtml += `<tr class="${rowClass}">
-                    <td class="text-left"><strong>${item.temp} ${unit}</strong></td>
+                    <td class="text-left"><strong>${item.temp} °${unit}</strong></td>
                     <td>${item.prob.toFixed(1)} %</td>
                 </tr>`;
             });
@@ -224,7 +224,7 @@
             targetData.institutions.forEach(inst => {
                 instHtml += `<tr>
                     <td class="text-left">${inst.name}</td>
-                    <td><strong>${inst.temp !== null && inst.temp !== "N/A" ? inst.temp + ` ${unit}` : "--"}</strong></td>
+                    <td><strong>${inst.temp !== null && inst.temp !== "N/A" ? inst.temp + ` °${unit}` : "--"}</strong></td>
                 </tr>`;
             });
             document.getElementById('inst-tbody').innerHTML = instHtml;
@@ -232,7 +232,7 @@
             // Render Probability Chart
             const ctxProb = document.getElementById('probChart').getContext('2d');
             let sortedProbs = [...targetData.model.probabilities].sort((a, b) => a.temp - b.temp);
-            let probLabels = sortedProbs.map(item => item.temp + ` ${unit}`);
+            let probLabels = sortedProbs.map(item => item.temp + ` °${unit}`);
             let probData = sortedProbs.map(item => item.prob);
             let maxProb = Math.max(...probData);
             let bgColors = probData.map(p => p === maxProb ? 'rgba(76, 175, 80, 0.7)' : 'rgba(100, 100, 100, 0.4)');
@@ -281,7 +281,7 @@
                         legend: { position: 'bottom', labels: { font: { size: 11, family: 'monospace' }, usePointStyle: true, boxWidth: 8 } },
                         tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', titleFont: { size: 14, family: 'monospace' }, bodyFont: { size: 12, family: 'monospace' }, padding: 10, cornerRadius: 4, itemSort: function(a, b) { return b.raw - a.raw; } }
                     },
-                    scales: { y: { title: { display: true, text: `Temperature (${unit})` }, grid: { color: '#eee' } }, x: { grid: { display: false } } }
+                    scales: { y: { title: { display: true, text: `Temperature (°${unit})` }, grid: { color: '#eee' } }, x: { grid: { display: false } } }
                 }
             });
         }
