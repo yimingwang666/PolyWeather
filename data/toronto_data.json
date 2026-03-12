@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-12 05:40:59 UTC",
+  "update_time": "2026-03-12 05:53:03 UTC",
   "hour": 1,
   "today": {
     "date": "2026-03-12",
@@ -248,33 +248,33 @@
       }
     },
     "model": {
-      "median": 1.11,
+      "median": 1.63,
       "quantiles": {
-        "p05": 0.43,
-        "p25": 0.76,
-        "p50": 1.11,
-        "p75": 1.58,
-        "p95": 2.35
+        "p05": 0.53,
+        "p25": 1.18,
+        "p50": 1.63,
+        "p75": 2.28,
+        "p95": 3.01
       },
       "probabilities": [
         {
           "temp": 1,
-          "prob": 61.15
+          "prob": 42.68
         },
         {
           "temp": 2,
-          "prob": 29.41
+          "prob": 38.43
         },
         {
-          "temp": 0,
-          "prob": 9.45
+          "temp": 3,
+          "prob": 18.89
         },
         {
           "temp": -1,
           "prob": 0.0
         },
         {
-          "temp": 3,
+          "temp": 0,
           "prob": 0.0
         }
       ]
@@ -283,8 +283,8 @@
   "tomorrow": {
     "date": "2026-03-13",
     "realtime": {
-      "current_temp": 2.6,
-      "max_temp": 2.6,
+      "current_temp": -5.0,
+      "max_temp": -5.0,
       "forecast_mean": 3.8,
       "forecast_std": 1.29
     },
@@ -527,33 +527,33 @@
       }
     },
     "model": {
-      "median": 2.62,
+      "median": 3.55,
       "quantiles": {
-        "p05": 2.17,
-        "p25": 2.29,
-        "p50": 2.62,
-        "p75": 3.17,
-        "p95": 3.77
+        "p05": 2.64,
+        "p25": 3.0,
+        "p50": 3.55,
+        "p75": 4.4,
+        "p95": 4.77
       },
       "probabilities": [
         {
           "temp": 3,
-          "prob": 45.31
-        },
-        {
-          "temp": 2,
-          "prob": 40.74
+          "prob": 47.52
         },
         {
           "temp": 4,
-          "prob": 13.94
+          "prob": 32.83
         },
         {
-          "temp": 0,
-          "prob": 0.0
+          "temp": 5,
+          "prob": 19.65
         },
         {
           "temp": 1,
+          "prob": 0.0
+        },
+        {
+          "temp": 2,
           "prob": 0.0
         }
       ]

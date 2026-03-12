@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-12 05:40:55 UTC",
+  "update_time": "2026-03-12 05:52:59 UTC",
   "hour": 14,
   "today": {
     "date": "2026-03-12",
@@ -248,33 +248,33 @@
       }
     },
     "model": {
-      "median": 8.61,
+      "median": 11.0,
       "quantiles": {
-        "p05": 7.38,
-        "p25": 8.59,
-        "p50": 8.61,
-        "p75": 8.67,
-        "p95": 9.48
+        "p05": 11.0,
+        "p25": 11.0,
+        "p50": 11.0,
+        "p75": 11.0,
+        "p95": 11.0
       },
       "probabilities": [
         {
+          "temp": 11,
+          "prob": 100.0
+        },
+        {
           "temp": 9,
-          "prob": 76.47
-        },
-        {
-          "temp": 8,
-          "prob": 16.54
-        },
-        {
-          "temp": 7,
-          "prob": 6.99
-        },
-        {
-          "temp": 6,
           "prob": 0.0
         },
         {
           "temp": 10,
+          "prob": 0.0
+        },
+        {
+          "temp": 12,
+          "prob": 0.0
+        },
+        {
+          "temp": 13,
           "prob": 0.0
         }
       ]
@@ -283,8 +283,8 @@
   "tomorrow": {
     "date": "2026-03-13",
     "realtime": {
-      "current_temp": 10.1,
-      "max_temp": 10.1,
+      "current_temp": 2.3,
+      "max_temp": 2.3,
       "forecast_mean": 8.5,
       "forecast_std": 2.16
     },
@@ -527,34 +527,34 @@
       }
     },
     "model": {
-      "median": 7.23,
+      "median": 11.56,
       "quantiles": {
-        "p05": 5.26,
-        "p25": 7.16,
-        "p50": 7.23,
-        "p75": 7.76,
-        "p95": 8.81
+        "p05": 10.57,
+        "p25": 11.39,
+        "p50": 11.56,
+        "p75": 11.61,
+        "p95": 11.7
       },
       "probabilities": [
         {
-          "temp": 7,
-          "prob": 44.61
+          "temp": 12,
+          "prob": 58.66
         },
         {
-          "temp": 8,
-          "prob": 26.4
+          "temp": 11,
+          "prob": 41.34
         },
         {
           "temp": 9,
-          "prob": 10.95
+          "prob": 0.0
         },
         {
-          "temp": 6,
-          "prob": 10.49
+          "temp": 10,
+          "prob": 0.0
         },
         {
-          "temp": 5,
-          "prob": 7.54
+          "temp": 13,
+          "prob": 0.0
         }
       ]
     }
