@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-13 22:34:53 UTC",
+  "update_time": "2026-03-13 22:57:31 UTC",
   "hour": 23,
   "today": {
     "date": "2026-03-13",
@@ -86,7 +86,7 @@
         7.0,
         6.0,
         4.5,
-        null
+        4.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
