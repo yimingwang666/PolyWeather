@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-13 08:32:18 UTC",
+  "update_time": "2026-03-13 09:09:51 UTC",
   "hour": 14,
   "today": {
     "date": "2026-03-13",
@@ -77,7 +77,7 @@
         31.5,
         33.0,
         34.0,
-        null,
+        34.0,
         null,
         null,
         null,
@@ -259,11 +259,11 @@
       "probabilities": [
         {
           "temp": 34,
-          "prob": 56.44
+          "prob": 56.37
         },
         {
           "temp": 35,
-          "prob": 43.56
+          "prob": 43.63
         },
         {
           "temp": 32,
