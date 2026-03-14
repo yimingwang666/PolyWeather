@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-03-14 10:31:34 UTC",
+  "update_time": "2026-03-14 10:57:54 UTC",
   "hour": 6,
   "today": {
     "date": "2026-03-14",
     "realtime": {
-      "current_temp": -2.0,
+      "current_temp": -1.0,
       "max_temp": 2.0,
       "forecast_mean": 0.62,
       "forecast_std": 0.3
@@ -69,7 +69,7 @@
         -1.0,
         -1.0,
         -1.0,
-        -2.0,
+        null,
         null,
         null,
         null,
@@ -139,7 +139,7 @@
           -1.4,
           -1.5,
           -1.6,
-          -3.2
+          -1.8
         ],
         "ICON (DE)": [
           0.2,
@@ -259,11 +259,11 @@
       "probabilities": [
         {
           "temp": 2,
-          "prob": 64.33
+          "prob": 64.37
         },
         {
           "temp": 3,
-          "prob": 35.67
+          "prob": 35.63
         },
         {
           "temp": 0,
