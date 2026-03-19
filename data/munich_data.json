@@ -1,11 +1,11 @@
 {
-  "update_time": "2026-03-19 11:48:51 UTC",
-  "hour": 12,
+  "update_time": "2026-03-19 12:29:40 UTC",
+  "hour": 13,
   "today": {
     "date": "2026-03-19",
     "realtime": {
-      "current_temp": 11.0,
-      "max_temp": 11.0,
+      "current_temp": 12.0,
+      "max_temp": 12.0,
       "forecast_mean": 11.6,
       "forecast_std": 0.87
     },
@@ -75,8 +75,8 @@
         7.0,
         7.5,
         10.5,
-        null,
-        null,
+        11.5,
+        12.0,
         null,
         null,
         null,
@@ -248,13 +248,13 @@
       }
     },
     "model": {
-      "median": 12.95,
+      "median": 12.72,
       "quantiles": {
-        "p05": 12.9,
-        "p25": 12.91,
-        "p50": 12.95,
-        "p75": 13.01,
-        "p95": 13.07
+        "p05": 12.61,
+        "p25": 12.64,
+        "p50": 12.72,
+        "p75": 12.74,
+        "p95": 12.74
       },
       "probabilities": [
         {
