@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-03-21 17:50:40 UTC",
+  "update_time": "2026-03-21 18:26:34 UTC",
   "hour": 23,
   "today": {
     "date": "2026-03-21",
     "realtime": {
-      "current_temp": 22.0,
+      "current_temp": 19.0,
       "max_temp": 25.0,
       "forecast_mean": 26.1,
       "forecast_std": 1.23
@@ -86,7 +86,7 @@
         null,
         22.0,
         22.0,
-        null
+        19.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -248,18 +248,22 @@
       }
     },
     "model": {
-      "median": 25.81,
+      "median": 25.58,
       "quantiles": {
-        "p05": 25.61,
-        "p25": 25.77,
-        "p50": 25.81,
-        "p75": 25.96,
-        "p95": 26.0
+        "p05": 25.5,
+        "p25": 25.51,
+        "p50": 25.58,
+        "p75": 25.69,
+        "p95": 25.75
       },
       "probabilities": [
         {
           "temp": 26,
-          "prob": 100.0
+          "prob": 91.52
+        },
+        {
+          "temp": 25,
+          "prob": 8.48
         },
         {
           "temp": 23,
@@ -267,10 +271,6 @@
         },
         {
           "temp": 24,
-          "prob": 0.0
-        },
-        {
-          "temp": 25,
           "prob": 0.0
         },
         {
