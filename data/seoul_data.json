@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-03-21 11:33:49 UTC",
+  "update_time": "2026-03-21 11:51:31 UTC",
   "hour": 20,
   "today": {
     "date": "2026-03-21",
@@ -83,7 +83,7 @@
         7.5,
         5.0,
         3.0,
-        null,
+        3.0,
         null,
         null,
         null
