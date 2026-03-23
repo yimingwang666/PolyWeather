@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-03-23 17:31:34 UTC",
+  "update_time": "2026-03-23 18:28:41 UTC",
   "hour": 23,
   "today": {
     "date": "2026-03-23",
     "realtime": {
-      "current_temp": 23.0,
+      "current_temp": 22.0,
       "max_temp": 30.0,
       "forecast_mean": 31.22,
       "forecast_std": 1.09
@@ -86,7 +86,7 @@
         25.0,
         24.0,
         23.0,
-        null
+        22.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -248,22 +248,22 @@
       }
     },
     "model": {
-      "median": 30.72,
+      "median": 30.68,
       "quantiles": {
         "p05": 30.26,
-        "p25": 30.37,
-        "p50": 30.72,
-        "p75": 30.86,
-        "p95": 31.0
+        "p25": 30.34,
+        "p50": 30.68,
+        "p75": 30.76,
+        "p95": 30.95
       },
       "probabilities": [
         {
           "temp": 31,
-          "prob": 65.92
+          "prob": 63.24
         },
         {
           "temp": 30,
-          "prob": 34.08
+          "prob": 36.76
         },
         {
           "temp": 28,
