@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-03-27 18:05:59 UTC",
-  "hour": 15,
+  "update_time": "2026-03-27 19:09:02 UTC",
+  "hour": 16,
   "today": {
     "date": "2026-03-27",
     "realtime": {
-      "current_temp": 26.0,
+      "current_temp": 25.0,
       "max_temp": 26.0,
       "forecast_mean": 25.38,
       "forecast_std": 1.79
@@ -78,7 +78,7 @@
         25.0,
         26.0,
         26.0,
-        null,
+        25.0,
         null,
         null,
         null,
@@ -254,7 +254,7 @@
         "p25": 26.0,
         "p50": 26.0,
         "p75": 26.0,
-        "p95": 26.11
+        "p95": 26.0
       },
       "probabilities": [
         {
