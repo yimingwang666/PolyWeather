@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-04-03 23:27:29 UTC",
+  "update_time": "2026-04-03 23:57:13 UTC",
   "hour": 1,
   "today": {
     "date": "2026-04-04",
@@ -64,7 +64,7 @@
       ],
       "actual_temp": [
         12.0,
-        null,
+        12.0,
         null,
         null,
         null,
