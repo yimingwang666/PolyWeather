@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-04-03 08:35:49 UTC",
-  "hour": 5,
+  "update_time": "2026-04-03 09:33:44 UTC",
+  "hour": 6,
   "today": {
     "date": "2026-04-03",
     "realtime": {
@@ -248,22 +248,22 @@
       }
     },
     "model": {
-      "median": 26.55,
+      "median": 26.54,
       "quantiles": {
         "p05": 25.76,
         "p25": 26.21,
-        "p50": 26.55,
+        "p50": 26.54,
         "p75": 26.76,
         "p95": 27.33
       },
       "probabilities": [
         {
           "temp": 27,
-          "prob": 53.46
+          "prob": 53.35
         },
         {
           "temp": 26,
-          "prob": 46.54
+          "prob": 46.65
         },
         {
           "temp": 24,
