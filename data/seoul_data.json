@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-04-06 13:54:21 UTC",
-  "hour": 22,
+  "update_time": "2026-04-06 14:41:11 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-04-06",
     "realtime": {
@@ -86,7 +86,7 @@
         8.5,
         7.5,
         7.0,
-        null
+        7.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
