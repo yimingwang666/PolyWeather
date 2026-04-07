@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-04-07 22:34:51 UTC",
-  "hour": 1,
+  "update_time": "2026-04-07 23:09:38 UTC",
+  "hour": 2,
   "today": {
     "date": "2026-04-08",
     "realtime": {
@@ -250,24 +250,24 @@
     "model": {
       "median": 9.9,
       "quantiles": {
-        "p05": 9.32,
+        "p05": 9.31,
         "p25": 9.72,
         "p50": 9.9,
-        "p75": 10.29,
+        "p75": 10.28,
         "p95": 10.86
       },
       "probabilities": [
         {
           "temp": 10,
-          "prob": 68.57
+          "prob": 68.55
         },
         {
           "temp": 11,
-          "prob": 17.51
+          "prob": 17.31
         },
         {
           "temp": 9,
-          "prob": 13.92
+          "prob": 14.14
         },
         {
           "temp": 7,
