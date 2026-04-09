@@ -1,13 +1,13 @@
 {
-  "update_time": "2026-04-09 11:40:23 UTC",
-  "hour": 7,
+  "update_time": "2026-04-09 12:45:34 UTC",
+  "hour": 8,
   "today": {
     "date": "2026-04-09",
     "realtime": {
-      "current_temp": 4.0,
-      "max_temp": 4.0,
-      "forecast_mean": 17.0,
-      "forecast_std": 1.75
+      "current_temp": 6.0,
+      "max_temp": 6.0,
+      "forecast_mean": 17.02,
+      "forecast_std": 1.77
     },
     "institutions": [
       {
@@ -16,7 +16,7 @@
       },
       {
         "name": "GFS (US)",
-        "temp": 19.6
+        "temp": 19.7
       },
       {
         "name": "ICON (DE)",
@@ -71,7 +71,7 @@
         2.0,
         3.0,
         4.0,
-        null,
+        6.0,
         null,
         null,
         null,
@@ -123,23 +123,23 @@
           0.9,
           0.8,
           2.1,
-          1.5,
-          3.0,
-          8.3,
-          11.4,
-          12.4,
-          13.9,
-          16.1,
-          17.9,
-          18.7,
+          2.3,
+          3.6,
+          9.0,
+          11.9,
+          13.8,
+          16.4,
+          18.0,
+          19.2,
           19.1,
-          19.6,
+          19.4,
+          19.7,
           19.5,
-          17.9,
-          15.5,
-          13.7,
-          8.5,
-          6.8
+          18.5,
+          17.1,
+          12.5,
+          7.5,
+          6.3
         ],
         "ICON (DE)": [
           0.4,
@@ -248,22 +248,22 @@
       }
     },
     "model": {
-      "median": 18.69,
+      "median": 18.87,
       "quantiles": {
-        "p05": 18.2,
-        "p25": 18.65,
-        "p50": 18.69,
-        "p75": 18.92,
-        "p95": 19.44
+        "p05": 17.93,
+        "p25": 18.6,
+        "p50": 18.87,
+        "p75": 18.94,
+        "p95": 19.49
       },
       "probabilities": [
         {
           "temp": 19,
-          "prob": 81.49
+          "prob": 77.86
         },
         {
           "temp": 18,
-          "prob": 18.51
+          "prob": 22.14
         },
         {
           "temp": 16,
@@ -285,8 +285,8 @@
     "realtime": {
       "current_temp": 5.6,
       "max_temp": 5.6,
-      "forecast_mean": 8.7,
-      "forecast_std": 2.89
+      "forecast_mean": 8.68,
+      "forecast_std": 2.9
     },
     "institutions": [
       {
@@ -295,7 +295,7 @@
       },
       {
         "name": "GFS (US)",
-        "temp": 5.8
+        "temp": 5.7
       },
       {
         "name": "ICON (DE)",
@@ -395,8 +395,8 @@
           2.5
         ],
         "GFS (US)": [
-          5.8,
-          4.2,
+          5.7,
+          4.4,
           3.2,
           2.6,
           2.9,
@@ -538,11 +538,11 @@
       "probabilities": [
         {
           "temp": 8,
-          "prob": 76.15
+          "prob": 76.16
         },
         {
           "temp": 7,
-          "prob": 23.85
+          "prob": 23.84
         },
         {
           "temp": 5,
