@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-04-12 08:31:17 UTC",
-  "hour": 5,
+  "update_time": "2026-04-12 09:27:55 UTC",
+  "hour": 6,
   "today": {
     "date": "2026-04-12",
     "realtime": {
@@ -248,22 +248,22 @@
       }
     },
     "model": {
-      "median": 21.85,
+      "median": 21.86,
       "quantiles": {
         "p05": 21.64,
         "p25": 21.71,
-        "p50": 21.85,
+        "p50": 21.86,
         "p75": 21.88,
         "p95": 22.61
       },
       "probabilities": [
         {
           "temp": 22,
-          "prob": 92.05
+          "prob": 92.1
         },
         {
           "temp": 23,
-          "prob": 7.95
+          "prob": 7.9
         },
         {
           "temp": 19,
