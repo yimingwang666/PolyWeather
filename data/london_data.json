@@ -1,11 +1,11 @@
 {
-  "update_time": "2026-04-18 11:36:43 UTC",
-  "hour": 12,
+  "update_time": "2026-04-18 12:01:59 UTC",
+  "hour": 13,
   "today": {
     "date": "2026-04-18",
     "realtime": {
-      "current_temp": 15.9,
-      "max_temp": 15.9,
+      "current_temp": 16.2,
+      "max_temp": 16.2,
       "forecast_mean": 16.23,
       "forecast_std": 0.72
     },
@@ -248,22 +248,22 @@
       }
     },
     "model": {
-      "median": 17.14,
+      "median": 16.87,
       "quantiles": {
-        "p05": 16.65,
-        "p25": 16.86,
-        "p50": 17.14,
-        "p75": 17.6,
-        "p95": 17.68
+        "p05": 16.6,
+        "p25": 16.67,
+        "p50": 16.87,
+        "p75": 17.39,
+        "p95": 17.4
       },
       "probabilities": [
         {
           "temp": 17,
-          "prob": 69.34
+          "prob": 100.0
         },
         {
-          "temp": 18,
-          "prob": 30.66
+          "temp": 14,
+          "prob": 0.0
         },
         {
           "temp": 15,
@@ -274,7 +274,7 @@
           "prob": 0.0
         },
         {
-          "temp": 19,
+          "temp": 18,
           "prob": 0.0
         }
       ]
