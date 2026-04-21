@@ -1,12 +1,12 @@
 {
-  "update_time": "2026-04-21 17:44:01 UTC",
-  "hour": 18,
+  "update_time": "2026-04-21 18:46:21 UTC",
+  "hour": 19,
   "today": {
     "date": "2026-04-21",
     "realtime": {
-      "current_temp": 11.5,
+      "current_temp": 10.4,
       "max_temp": 14.8,
-      "forecast_mean": 13.28,
+      "forecast_mean": 13.33,
       "forecast_std": 0.71
     },
     "institutions": [
@@ -28,7 +28,7 @@
       },
       {
         "name": "UKMO (UK)",
-        "temp": 13.2
+        "temp": 13.5
       },
       {
         "name": "CMA (CN)",
@@ -210,14 +210,14 @@
           13.0,
           13.1,
           13.2,
-          13.2,
-          13.1,
-          12.4,
-          11.4,
+          13.5,
+          13.4,
+          12.6,
+          11.6,
           10.4,
           9.7,
-          9.0,
-          8.4
+          9.1,
+          8.5
         ],
         "CMA (CN)": [
           5.6,
