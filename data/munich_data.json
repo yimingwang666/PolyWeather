@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-05-14 20:47:50 UTC",
-  "hour": 22,
+  "update_time": "2026-05-14 21:54:39 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-05-14",
     "realtime": {
-      "current_temp": 8.0,
+      "current_temp": 6.0,
       "max_temp": 13.0,
       "forecast_mean": 12.52,
       "forecast_std": 0.51
@@ -85,8 +85,8 @@
         10.5,
         9.0,
         8.5,
-        8.0,
-        null
+        7.5,
+        6.5
       ],
       "forecasts": {
         "ECMWF (EU)": [
