@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-05-16 17:16:37 UTC",
-  "hour": 22,
+  "update_time": "2026-05-16 18:08:48 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-05-16",
     "realtime": {
-      "current_temp": 30.0,
+      "current_temp": 32.0,
       "max_temp": 40.0,
       "forecast_mean": 40.93,
       "forecast_std": 1.58
@@ -86,7 +86,7 @@
         35.0,
         33.5,
         31.5,
-        null
+        32.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -248,13 +248,13 @@
       }
     },
     "model": {
-      "median": 40.0,
+      "median": 40.01,
       "quantiles": {
         "p05": 40.0,
         "p25": 40.0,
-        "p50": 40.0,
-        "p75": 40.03,
-        "p95": 40.07
+        "p50": 40.01,
+        "p75": 40.07,
+        "p95": 40.1
       },
       "probabilities": [
         {
