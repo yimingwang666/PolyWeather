@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-05-24 11:37:22 UTC",
-  "hour": 20,
+  "update_time": "2026-05-24 12:44:02 UTC",
+  "hour": 21,
   "today": {
     "date": "2026-05-24",
     "realtime": {
-      "current_temp": 19.0,
+      "current_temp": 18.0,
       "max_temp": 24.0,
       "forecast_mean": 22.65,
       "forecast_std": 3.02
@@ -83,8 +83,8 @@
         22.5,
         20.5,
         19.5,
-        null,
-        null,
+        18.0,
+        18.0,
         null,
         null
       ],
@@ -248,13 +248,13 @@
       }
     },
     "model": {
-      "median": 24.2,
+      "median": 24.12,
       "quantiles": {
         "p05": 24.0,
-        "p25": 24.09,
-        "p50": 24.2,
-        "p75": 24.36,
-        "p95": 24.42
+        "p25": 24.0,
+        "p50": 24.12,
+        "p75": 24.27,
+        "p95": 24.4
       },
       "probabilities": [
         {
