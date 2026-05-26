@@ -1,22 +1,22 @@
 {
-  "update_time": "2026-05-26 15:19:04 UTC",
-  "hour": 0,
+  "update_time": "2026-05-26 18:07:07 UTC",
+  "hour": 3,
   "today": {
     "date": "2026-05-27",
     "realtime": {
       "current_temp": 22.0,
-      "max_temp": 22.0,
-      "forecast_mean": 21.0,
-      "forecast_std": 0.99
+      "max_temp": 23.0,
+      "forecast_mean": 22.3,
+      "forecast_std": 2.09
     },
     "institutions": [
       {
         "name": "ECMWF (EU)",
-        "temp": null
+        "temp": 25.6
       },
       {
         "name": "GFS (US)",
-        "temp": null
+        "temp": 24.5
       },
       {
         "name": "ICON (DE)",
@@ -24,7 +24,7 @@
       },
       {
         "name": "JMA (JP)",
-        "temp": null
+        "temp": 20.7
       },
       {
         "name": "UKMO (UK)",
@@ -64,8 +64,8 @@
       ],
       "actual_temp": [
         22.0,
-        null,
-        null,
+        22.5,
+        22.0,
         null,
         null,
         null,
@@ -90,108 +90,108 @@
       ],
       "forecasts": {
         "ECMWF (EU)": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        "GFS (US)": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ],
-        "ICON (DE)": [
-          22.2,
-          22.2,
-          22.3,
-          22.4,
-          22.0,
           21.6,
-          21.1,
+          21.4,
+          21.2,
+          21.0,
+          20.9,
+          20.8,
           20.9,
           21.2,
-          21.4,
-          21.7,
-          21.7,
-          21.5,
-          21.5,
           21.8,
+          22.5,
+          23.5,
+          24.5,
+          25.4,
+          25.6,
+          25.5,
+          25.3,
+          25.1,
+          24.9,
+          24.5,
+          24.0,
+          23.3,
+          22.8,
+          22.3,
+          22.0
+        ],
+        "GFS (US)": [
+          22.5,
           22.1,
-          22.0,
+          21.9,
+          21.6,
+          21.3,
+          21.1,
+          20.8,
+          21.5,
           21.8,
+          22.0,
+          22.4,
+          22.7,
+          23.8,
+          24.5,
+          23.9,
+          22.6,
+          21.3,
           21.5,
           21.3,
-          20.9,
-          20.7,
+          20.4,
+          20.0,
+          19.7,
+          19.8,
+          20.0
+        ],
+        "ICON (DE)": [
+          22.4,
+          22.3,
+          22.3,
+          22.2,
+          22.1,
+          22.0,
+          21.9,
+          21.7,
+          21.7,
+          21.9,
+          21.8,
+          21.9,
+          22.1,
+          22.0,
+          22.1,
+          22.3,
+          22.4,
+          22.1,
+          21.6,
+          21.2,
+          21.0,
+          20.6,
           20.5,
-          20.3
+          20.4
         ],
         "JMA (JP)": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
+          20.5,
+          20.3,
+          20.2,
+          19.8,
+          19.5,
+          19.2,
+          18.7,
+          18.8,
+          18.7,
+          19.1,
+          19.5,
+          20.1,
+          20.7,
+          20.5,
+          19.9,
+          19.6,
+          19.3,
+          18.9,
+          18.9,
+          18.8,
+          18.7,
+          18.4,
+          18.3,
+          18.3
         ],
         "UKMO (UK)": [
           19.9,
@@ -248,33 +248,33 @@
       }
     },
     "model": {
-      "median": 22.0,
+      "median": 24.0,
       "quantiles": {
-        "p05": 22.0,
-        "p25": 22.0,
-        "p50": 22.0,
-        "p75": 22.0,
-        "p95": 22.0
+        "p05": 23.88,
+        "p25": 23.96,
+        "p50": 24.0,
+        "p75": 24.43,
+        "p95": 24.82
       },
       "probabilities": [
         {
-          "temp": 22,
-          "prob": 100.0
+          "temp": 24,
+          "prob": 78.56
         },
         {
-          "temp": 20,
-          "prob": 0.0
+          "temp": 25,
+          "prob": 21.44
         },
         {
           "temp": 21,
           "prob": 0.0
         },
         {
-          "temp": 23,
+          "temp": 22,
           "prob": 0.0
         },
         {
-          "temp": 24,
+          "temp": 23,
           "prob": 0.0
         }
       ]
@@ -283,27 +283,27 @@
   "tomorrow": {
     "date": "2026-05-28",
     "realtime": {
-      "current_temp": null,
-      "max_temp": null,
-      "forecast_mean": 21.13,
-      "forecast_std": 1.69
+      "current_temp": 21.6,
+      "max_temp": 21.6,
+      "forecast_mean": 22.02,
+      "forecast_std": 1.65
     },
     "institutions": [
       {
         "name": "ECMWF (EU)",
-        "temp": null
+        "temp": 22.2
       },
       {
         "name": "GFS (US)",
-        "temp": null
+        "temp": 24.2
       },
       {
         "name": "ICON (DE)",
-        "temp": 23.5
+        "temp": 23.7
       },
       {
         "name": "JMA (JP)",
-        "temp": null
+        "temp": 22.1
       },
       {
         "name": "UKMO (UK)",
@@ -369,108 +369,108 @@
       ],
       "forecasts": {
         "ECMWF (EU)": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
+          21.6,
+          21.4,
+          21.2,
+          21.0,
+          20.4,
+          19.8,
+          19.5,
+          20.0,
+          21.0,
+          21.8,
+          22.0,
+          22.2,
+          22.2,
+          22.2,
+          22.1,
+          21.9,
+          21.4,
+          20.9,
+          20.3,
+          19.9,
+          19.5,
+          19.2,
+          18.8,
+          18.4
         ],
         "GFS (US)": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
+          19.5,
+          19.9,
+          19.8,
+          19.6,
+          19.5,
+          19.1,
+          18.5,
+          18.2,
+          19.5,
+          20.8,
+          21.8,
+          22.7,
+          22.0,
+          23.9,
+          23.9,
+          23.9,
+          24.2,
+          23.3,
+          22.0,
+          20.2,
+          18.1,
+          17.5,
+          17.4,
+          17.7
         ],
         "ICON (DE)": [
           20.2,
-          20.0,
-          19.9,
+          20.1,
+          20.1,
           19.7,
-          19.5,
+          19.7,
           19.4,
-          19.3,
-          19.2,
-          19.4,
-          20.0,
-          20.5,
-          20.6,
-          20.9,
-          22.0,
+          18.9,
+          18.6,
+          18.9,
+          18.9,
+          19.6,
+          20.7,
+          21.5,
+          22.7,
           23.5,
-          23.4,
-          23.0,
-          22.0,
-          21.6,
+          23.7,
+          22.6,
+          21.8,
           21.1,
-          20.4,
-          19.9,
+          20.1,
           19.3,
-          18.7
+          18.9,
+          18.4,
+          18.0
         ],
         "JMA (JP)": [
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
+          18.3,
+          18.1,
+          17.9,
+          17.6,
+          17.6,
+          17.5,
+          17.4,
+          17.5,
+          17.8,
+          18.7,
+          20.0,
+          21.2,
+          21.9,
+          22.1,
+          21.5,
+          20.9,
+          20.1,
+          20.0,
+          18.9,
+          18.7,
+          19.1,
+          18.8,
+          18.5,
+          18.2
         ],
         "UKMO (UK)": [
           18.8,
@@ -527,34 +527,34 @@
       }
     },
     "model": {
-      "median": 4.82,
+      "median": 24.8,
       "quantiles": {
-        "p05": 0.81,
-        "p25": 3.87,
-        "p50": 4.82,
-        "p75": 5.8,
-        "p95": 6.69
+        "p05": 23.5,
+        "p25": 24.32,
+        "p50": 24.8,
+        "p75": 24.96,
+        "p95": 24.99
       },
       "probabilities": [
         {
-          "temp": 5,
-          "prob": 25.75
+          "temp": 25,
+          "prob": 65.67
         },
         {
-          "temp": 6,
-          "prob": 23.33
+          "temp": 24,
+          "prob": 29.28
         },
         {
-          "temp": 4,
-          "prob": 19.06
+          "temp": 23,
+          "prob": 5.05
         },
         {
-          "temp": 2,
-          "prob": 6.54
+          "temp": 22,
+          "prob": 0.0
         },
         {
-          "temp": 3,
-          "prob": 6.54
+          "temp": 26,
+          "prob": 0.0
         }
       ]
     }
