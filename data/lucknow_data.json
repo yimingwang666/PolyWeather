@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-06-11 15:21:45 UTC",
-  "hour": 20,
+  "update_time": "2026-06-11 18:29:57 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-06-11",
     "realtime": {
-      "current_temp": 30.0,
+      "current_temp": 28.0,
       "max_temp": 36.0,
       "forecast_mean": 39.42,
       "forecast_std": 2.53
@@ -84,9 +84,9 @@
         32.5,
         31.5,
         30.0,
-        null,
-        null,
-        null
+        29.5,
+        29.0,
+        28.5
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -254,7 +254,7 @@
         "p25": 36.0,
         "p50": 36.0,
         "p75": 36.05,
-        "p95": 36.05
+        "p95": 36.23
       },
       "probabilities": [
         {
