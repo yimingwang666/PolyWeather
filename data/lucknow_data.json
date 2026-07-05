@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-07-05 16:32:28 UTC",
-  "hour": 22,
+  "update_time": "2026-07-05 17:40:32 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-07-05",
     "realtime": {
@@ -85,7 +85,7 @@
         33.5,
         30.5,
         30.0,
-        null,
+        30.5,
         null
       ],
       "forecasts": {
