@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-07-12 20:23:44 UTC",
-  "hour": 22,
+  "update_time": "2026-07-12 21:13:09 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-07-12",
     "realtime": {
-      "current_temp": 31.0,
+      "current_temp": 28.0,
       "max_temp": 35.0,
       "forecast_mean": 33.95,
       "forecast_std": 1.19
@@ -85,8 +85,8 @@
         34.5,
         34.0,
         32.0,
-        null,
-        null
+        29.0,
+        28.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -254,7 +254,7 @@
         "p25": 35.0,
         "p50": 35.0,
         "p75": 35.0,
-        "p95": 35.27
+        "p95": 35.22
       },
       "probabilities": [
         {
