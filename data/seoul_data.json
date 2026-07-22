@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-07-22 20:00:57 UTC",
-  "hour": 5,
+  "update_time": "2026-07-22 21:18:21 UTC",
+  "hour": 6,
   "today": {
     "date": "2026-07-23",
     "realtime": {
@@ -68,7 +68,7 @@
         26.0,
         26.0,
         26.0,
-        null,
+        26.0,
         null,
         null,
         null,
@@ -259,11 +259,11 @@
       "probabilities": [
         {
           "temp": 27,
-          "prob": 60.69
+          "prob": 60.67
         },
         {
           "temp": 28,
-          "prob": 39.31
+          "prob": 39.33
         },
         {
           "temp": 25,
