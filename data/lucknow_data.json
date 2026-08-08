@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-08-08 14:16:37 UTC",
-  "hour": 19,
+  "update_time": "2026-08-08 14:51:22 UTC",
+  "hour": 20,
   "today": {
     "date": "2026-08-08",
     "realtime": {
-      "current_temp": 31.0,
+      "current_temp": 30.0,
       "max_temp": 32.0,
       "forecast_mean": 33.52,
       "forecast_std": 1.44
@@ -82,8 +82,8 @@
         32.0,
         32.0,
         31.5,
-        31.0,
-        null,
+        30.5,
+        30.0,
         null,
         null,
         null
@@ -248,13 +248,13 @@
       }
     },
     "model": {
-      "median": 32.11,
+      "median": 32.12,
       "quantiles": {
         "p05": 32.0,
-        "p25": 32.04,
-        "p50": 32.11,
-        "p75": 32.17,
-        "p95": 32.29
+        "p25": 32.1,
+        "p50": 32.12,
+        "p75": 32.28,
+        "p95": 32.34
       },
       "probabilities": [
         {
