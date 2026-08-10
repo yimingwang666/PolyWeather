@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-08-10 20:56:19 UTC",
-  "hour": 22,
+  "update_time": "2026-08-10 21:35:29 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-08-10",
     "realtime": {
-      "current_temp": 25.0,
+      "current_temp": 23.0,
       "max_temp": 34.0,
       "forecast_mean": 31.87,
       "forecast_std": 1.27
@@ -86,7 +86,7 @@
         25.5,
         25.0,
         25.0,
-        null
+        23.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -248,22 +248,26 @@
       }
     },
     "model": {
-      "median": 34.03,
+      "median": 34.31,
       "quantiles": {
         "p05": 34.0,
         "p25": 34.0,
-        "p50": 34.03,
-        "p75": 34.56,
-        "p95": 35.5
+        "p50": 34.31,
+        "p75": 34.71,
+        "p95": 35.68
       },
       "probabilities": [
         {
           "temp": 34,
-          "prob": 72.28
+          "prob": 61.91
         },
         {
           "temp": 35,
-          "prob": 27.72
+          "prob": 29.4
+        },
+        {
+          "temp": 36,
+          "prob": 8.7
         },
         {
           "temp": 32,
@@ -271,10 +275,6 @@
         },
         {
           "temp": 33,
-          "prob": 0.0
-        },
-        {
-          "temp": 36,
           "prob": 0.0
         }
       ]
