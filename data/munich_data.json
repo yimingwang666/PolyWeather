@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-08-12 16:49:20 UTC",
-  "hour": 18,
+  "update_time": "2026-08-12 17:45:07 UTC",
+  "hour": 19,
   "today": {
     "date": "2026-08-12",
     "realtime": {
@@ -82,7 +82,7 @@
         30.0,
         30.0,
         29.0,
-        null,
+        29.0,
         null,
         null,
         null,
@@ -248,22 +248,22 @@
       }
     },
     "model": {
-      "median": 30.35,
+      "median": 30.36,
       "quantiles": {
         "p05": 30.0,
         "p25": 30.17,
-        "p50": 30.35,
+        "p50": 30.36,
         "p75": 30.66,
         "p95": 30.96
       },
       "probabilities": [
         {
           "temp": 30,
-          "prob": 62.04
+          "prob": 61.74
         },
         {
           "temp": 31,
-          "prob": 37.96
+          "prob": 38.26
         },
         {
           "temp": 28,
