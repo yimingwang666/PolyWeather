@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-08-12 18:38:10 UTC",
-  "hour": 6,
+  "update_time": "2026-08-12 19:44:33 UTC",
+  "hour": 7,
   "today": {
     "date": "2026-08-13",
     "realtime": {
-      "current_temp": 12.0,
+      "current_temp": 11.0,
       "max_temp": 12.0,
       "forecast_mean": 14.07,
       "forecast_std": 0.52
@@ -69,8 +69,8 @@
         10.5,
         11.0,
         11.5,
-        null,
-        null,
+        12.0,
+        11.0,
         null,
         null,
         null,
@@ -248,26 +248,26 @@
       }
     },
     "model": {
-      "median": 14.69,
+      "median": 14.8,
       "quantiles": {
-        "p05": 14.25,
-        "p25": 14.53,
-        "p50": 14.69,
-        "p75": 15.48,
-        "p95": 15.88
+        "p05": 14.18,
+        "p25": 14.54,
+        "p50": 14.8,
+        "p75": 15.68,
+        "p95": 16.32
       },
       "probabilities": [
         {
           "temp": 15,
-          "prob": 53.17
+          "prob": 46.9
         },
         {
           "temp": 16,
-          "prob": 23.93
+          "prob": 30.1
         },
         {
           "temp": 14,
-          "prob": 22.9
+          "prob": 23.0
         },
         {
           "temp": 12,
