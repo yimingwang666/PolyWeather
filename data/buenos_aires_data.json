@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-08-17 04:04:10 UTC",
+  "update_time": "2026-08-17 04:53:39 UTC",
   "hour": 1,
   "today": {
     "date": "2026-08-17",
@@ -64,7 +64,7 @@
       ],
       "actual_temp": [
         15.0,
-        null,
+        15.0,
         null,
         null,
         null,
@@ -259,15 +259,15 @@
       "probabilities": [
         {
           "temp": 15,
-          "prob": 73.83
+          "prob": 73.87
         },
         {
           "temp": 16,
-          "prob": 8.22
+          "prob": 8.19
         },
         {
           "temp": 17,
-          "prob": 7.2
+          "prob": 7.21
         },
         {
           "temp": 13,
