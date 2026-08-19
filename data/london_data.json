@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-08-19 20:48:18 UTC",
-  "hour": 21,
+  "update_time": "2026-08-19 21:11:04 UTC",
+  "hour": 22,
   "today": {
     "date": "2026-08-19",
     "realtime": {
-      "current_temp": 19.4,
+      "current_temp": 19.2,
       "max_temp": 23.8,
       "forecast_mean": 23.35,
       "forecast_std": 1.52
@@ -253,17 +253,17 @@
         "p05": 23.8,
         "p25": 24.31,
         "p50": 24.34,
-        "p75": 24.42,
-        "p95": 24.74
+        "p75": 24.43,
+        "p95": 24.76
       },
       "probabilities": [
         {
           "temp": 24,
-          "prob": 79.91
+          "prob": 79.06
         },
         {
           "temp": 25,
-          "prob": 20.09
+          "prob": 20.94
         },
         {
           "temp": 22,
