@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-08-21 01:52:56 UTC",
-  "hour": 22,
+  "update_time": "2026-08-21 02:55:47 UTC",
+  "hour": 23,
   "today": {
     "date": "2026-08-20",
     "realtime": {
-      "current_temp": 11.0,
+      "current_temp": 9.0,
       "max_temp": 19.0,
       "forecast_mean": 17.87,
       "forecast_std": 1.18
@@ -86,7 +86,7 @@
         13.0,
         13.0,
         11.0,
-        null
+        9.0
       ],
       "forecasts": {
         "ECMWF (EU)": [
@@ -254,12 +254,16 @@
         "p25": 19.0,
         "p50": 19.0,
         "p75": 19.0,
-        "p95": 19.4
+        "p95": 19.62
       },
       "probabilities": [
         {
           "temp": 19,
-          "prob": 100.0
+          "prob": 91.22
+        },
+        {
+          "temp": 20,
+          "prob": 8.78
         },
         {
           "temp": 17,
@@ -267,10 +271,6 @@
         },
         {
           "temp": 18,
-          "prob": 0.0
-        },
-        {
-          "temp": 20,
           "prob": 0.0
         },
         {
