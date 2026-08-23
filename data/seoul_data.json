@@ -1,10 +1,10 @@
 {
-  "update_time": "2026-08-23 09:56:57 UTC",
-  "hour": 18,
+  "update_time": "2026-08-23 10:19:17 UTC",
+  "hour": 19,
   "today": {
     "date": "2026-08-23",
     "realtime": {
-      "current_temp": 30.0,
+      "current_temp": 28.0,
       "max_temp": 32.0,
       "forecast_mean": 29.12,
       "forecast_std": 1.5
@@ -81,8 +81,8 @@
         31.5,
         31.0,
         30.5,
-        30.0,
-        null,
+        29.5,
+        28.0,
         null,
         null,
         null,
