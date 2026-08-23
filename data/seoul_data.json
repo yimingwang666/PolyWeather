@@ -1,5 +1,5 @@
 {
-  "update_time": "2026-08-23 20:21:52 UTC",
+  "update_time": "2026-08-23 20:45:59 UTC",
   "hour": 5,
   "today": {
     "date": "2026-08-24",
@@ -68,7 +68,7 @@
         26.0,
         26.0,
         26.0,
-        null,
+        26.0,
         null,
         null,
         null,
@@ -259,11 +259,11 @@
       "probabilities": [
         {
           "temp": 29,
-          "prob": 58.13
+          "prob": 58.16
         },
         {
           "temp": 28,
-          "prob": 30.02
+          "prob": 29.99
         },
         {
           "temp": 30,
