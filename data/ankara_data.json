@@ -1,6 +1,6 @@
 {
-  "update_time": "2026-08-25 14:24:41 UTC",
-  "hour": 17,
+  "update_time": "2026-08-25 15:12:27 UTC",
+  "hour": 18,
   "today": {
     "date": "2026-08-25",
     "realtime": {
@@ -80,7 +80,7 @@
         29.0,
         30.0,
         30.0,
-        null,
+        30.0,
         null,
         null,
         null,
